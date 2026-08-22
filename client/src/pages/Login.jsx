@@ -24,7 +24,7 @@ export default function Login() {
     try {
       const { token, user } = await request('/auth/login', { method: 'POST', body: { email, password } });
       login(token, user);
-      navigate('/dashboard');
+      navigate(user.role === 'SUPER_ADMIN' || user.isAdmin ? '/admin?tab=analytics' : '/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

@@ -18,6 +18,7 @@ model User {
   country      String?
   bio          String?
   photoUrl     String?        @map("photo_url")
+  language     String         @default("en")
   passwordHash String         @map("password_hash")
   role         String         @default("TRAVELER") // 'SUPER_ADMIN' | 'AGENCY_ADMIN' | 'TRAVELER'
   isAdmin      Boolean        @default(false) @map("is_admin")
@@ -26,6 +27,7 @@ model User {
   posts        CommunityPost[]
   resetTokens  PasswordResetToken[]
   tripMemberships TripMember[]
+  savedDestinations SavedDestination[]
 
   @@map("users")
 }
@@ -56,9 +58,23 @@ model City {
   lng        Decimal?    @db.Decimal(9, 6)
   activities Activity[]
   stops      TripStop[]
+  savedBy    SavedDestination[]
 
   @@index([name])
   @@map("cities")
+}
+
+model SavedDestination {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  cityId    Int      @map("city_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cityId])
+  @@index([userId])
+  @@map("saved_destinations")
 }
 
 /// Seeded catalog activity, scoped to a city.
@@ -87,8 +103,8 @@ model Trip {
   startDate               DateTime   @map("start_date") @db.Date
   endDate                 DateTime   @map("end_date") @db.Date
   description             String?
-  coverPhotoUrl           String?    @map("cover_photo_url")
   isPublic                Boolean    @default(false) @map("is_public")
+  coverPhotoUrl           String?    @map("cover_photo_url")
   budgetTransportPerStop  Decimal?   @map("budget_transport_per_stop") @db.Decimal(8, 2)
   budgetStayPerDay        Decimal?   @map("budget_stay_per_day") @db.Decimal(8, 2)
   budgetMealsPerDay       Decimal?   @map("budget_meals_per_day") @db.Decimal(8, 2)
