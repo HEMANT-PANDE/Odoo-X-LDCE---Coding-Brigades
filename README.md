@@ -77,7 +77,7 @@ City/Activity Search are picker modals inside the Itinerary Builder, not standal
 
 | Concern | Choice |
 |---|---|
-| DB access | `pg` + parameterized SQL |
+| DB access | Prisma (v6) + `@prisma/client` |
 | Auth | `bcrypt` + `jsonwebtoken` (Bearer header) |
 | Frontend routing | `react-router-dom` |
 | HTTP client | native `fetch` |
@@ -86,20 +86,32 @@ City/Activity Search are picker modals inside the Itinerary Builder, not standal
 
 ## Seed Data
 
-`server/db/seed.sql` — ~20-25 cities (global + a few India-region ones), ~5-8
-activities per city across all categories. Static INSERTs, run once via `psql -f seed.sql`.
+`server/prisma/seed.js` — 24 cities (global + a few India-region ones) × 5 activities
+each (one per category), generated from a small template. Run via `npm run prisma:seed`.
 
-## Build Order (~24-36h, 2-4 people)
+## Setup (already done)
 
-1. **Setup** (~1-1.5h) — scaffold client/server, Postgres up, run `schema.sql`.
-2. **Auth + Trip CRUD** (hrs 1-8) — first demoable slice: signup → login → create trip → My Trips.
-3. **Itinerary Builder + City/Activity Search** (hrs 8-18) — add stops, assign activities.
-4. **Itinerary View + Budget** (hrs 18-26) — day-wise view, budget breakdown + charts.
-5. **Polish + Demo Prep** (hrs 26-36) — seed variety, empty states, bug fixes, demo script.
+Scaffolding, schema, and route/page skeletons are in place (see git history / prior
+session). Before Phase 1 work: put a Postgres connection string in `server/.env`
+(`DATABASE_URL`), then `cd server && npm run prisma:migrate && npm run prisma:seed`.
+
+## Hour-by-Hour Plan (8-hour hackathon)
+
+| Hour | Focus |
+|---|---|
+| 1 | Connect Postgres (`prisma:migrate` + `prisma:seed`), confirm client+server boot, split roles (backend/frontend). |
+| 2 | Auth: signup/login API (bcrypt+JWT) + Login/Signup pages wired to it. |
+| 3 | Trip CRUD API + CreateTrip, MyTrips, Dashboard wired to real data. |
+| 4 | Itinerary Builder: stops API + Add Stop flow (CityPicker modal, date range). |
+| 5 | Stop-activities API + ActivityPicker modal (filters, add/remove). |
+| 6 | Budget calc API + Itinerary View (day-wise) + Budget page with recharts. |
+| 7 | Polish: bug fixes, empty states, styling pass, error handling, full run-through. |
+| 8 | Record and edit the 5-minute demo video; submit. |
 
 ## Verification
 
-- `psql`: confirm FK cascades and date-range CHECK constraints.
+- Prisma Studio (`npm run prisma:studio`) or a query: confirm cascade deletes and
+  date-range validation (checked in route handlers) reject bad input.
 - Manual pass: signup → login → create trip → add 2+ stops → assign activities → view
   itinerary → view budget → re-login and confirm persistence.
 - Smoke-test each API route, especially `GET /api/trips/:id` and
