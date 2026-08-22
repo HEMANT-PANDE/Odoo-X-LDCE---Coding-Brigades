@@ -4,41 +4,41 @@
 @import "shadcn/tailwind.css";
 
 :root {
-  --background: #f5f5f5;
-  --foreground: #303841;
-  --card: #ffffff;
-  --card-foreground: #303841;
-  --popover: #ffffff;
-  --popover-foreground: #303841;
+  --background: #FBF6ED;
+  --foreground: #16302B;
+  --card: #FBF6ED;
+  --card-foreground: #16302B;
+  --popover: #FBF6ED;
+  --popover-foreground: #16302B;
 
-  --primary: #76abae;
-  --primary-foreground: #ffffff;
-  --secondary: #d8e9ea;
-  --secondary-foreground: #303841;
-  --muted: #eceff1;
-  --muted-foreground: #6b7280;
-  --accent: #ff5722;
-  --accent-foreground: #ffffff;
+  --primary: #16302B;
+  --primary-foreground: #FBF6ED;
+  --secondary: #7FA593;
+  --secondary-foreground: #16302B;
+  --muted: #E4E7E5;
+  --muted-foreground: #6A8077;
+  --accent: #E15B4F;
+  --accent-foreground: #FBF6ED;
   --destructive: #d64545;
   --destructive-foreground: #ffffff;
 
-  --border: #e4e6ed;
-  --input: #e4e6ed;
-  --ring: #76abae;
+  --border: #C8D1CE;
+  --input: #C8D1CE;
+  --ring: #16302B;
 
-  --chart-1: #76abae;
-  --chart-2: #303841;
-  --chart-3: #ff5722;
-  --chart-4: #5f7a7c;
+  --chart-1: #F2A93B;
+  --chart-2: #E15B4F;
+  --chart-3: #7FA593;
+  --chart-4: #16302B;
   --chart-5: #4e575f;
 
   --radius: 0.75rem;
 
   /* Legacy CSS vars for existing pages */
-  --text: #303841;
-  --bg: #f5f5f5;
-  --card-bg: #fff;
-  --accent-text: #fff;
+  --text: #16302B;
+  --bg: #FBF6ED;
+  --card-bg: #FBF6ED;
+  --accent-text: #FBF6ED;
   --error: #d64545;
 }
 
@@ -87,6 +87,9 @@
   }
   html {
     @apply font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight;
   }
 }
 

@@ -32,31 +32,85 @@ export default function Login() {
     }
   }
 
+  function handleGoogleSignIn() {
+    // TODO: point this at your backend's OAuth redirect, e.g.
+    // window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    window.location.href = '/auth/google';
+  }
+
   return (
     <AuthLayout>
-      <Card>
+      {/* Light, mostly-opaque glass so text stays readable over any photo —
+          dark ink text throughout instead of white-on-light. */}
+      <Card className="w-full border border-white/40 bg-white/85 shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-2xl">
         <CardHeader>
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Log in to keep planning your trips.</CardDescription>
+          <CardTitle className="font-serif text-2xl font-semibold tracking-tight text-foreground">
+            Welcome back
+          </CardTitle>
+          <CardDescription className="text-foreground/65">
+            Log in to keep planning your trips.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            {error && <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
+            {error && (
+              <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {error}
+              </p>
+            )}
+
             <div className="grid gap-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Label htmlFor="email" className="text-foreground/80">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border-foreground/15 bg-white/70 text-foreground placeholder:text-foreground/40 focus-visible:ring-accent"
+              />
             </div>
+
             <div className="grid gap-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-foreground/80">
+                  Password
+                </Label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-foreground/55 hover:text-accent-foreground"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="border-foreground/15 bg-white/70 text-foreground placeholder:text-foreground/40 focus-visible:ring-accent"
+              />
             </div>
-            <Button type="submit" disabled={loading} className="mt-1">
-              <LogIn className="size-4" /> {loading ? 'Logging in...' : 'Login'}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="mt-1 bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <LogIn className="size-4" /> {loading ? 'Signing in...' : 'Sign In'}
             </Button>
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <Link to="/signup" className="hover:text-primary">Create an account</Link>
-              <Link to="/forgot-password" className="hover:text-primary">Forgot password?</Link>
-            </div>
+
+            <p className="text-center text-sm text-foreground/60">
+              Are you new?{' '}
+              <Link to="/signup" className="font-medium text-accent-foreground hover:opacity-80">
+                Create an Account
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>

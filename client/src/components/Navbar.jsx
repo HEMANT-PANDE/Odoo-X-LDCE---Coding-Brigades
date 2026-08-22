@@ -18,66 +18,79 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  if (!user) return null;
-
-  const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase();
+  const initials = user ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() : '';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-dashed border-foreground/25 bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
-        <Link to="/dashboard" className="flex items-center gap-2 text-foreground">
-          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
-            <Globe2 className="size-5" />
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 text-foreground">
+          <span className="inline-flex size-9 items-center justify-center rounded-full bg-foreground text-background shadow-sm">
+            <Globe2 className="size-4.5" />
           </span>
-          <div>
-            <p className="text-base font-semibold leading-none tracking-tight">GlobeTrotter</p>
-            <p className="text-xs text-muted-foreground">Empowering Personalized Travel Planning</p>
+          <div className="leading-tight">
+            <p className="font-serif text-base font-semibold tracking-tight">GlobeTrotter</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
+              Travel Planning
+            </p>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {LINKS.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              className={cn(
-                'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground',
-                pathname === to && 'bg-secondary text-secondary-foreground'
+        {user ? (
+          <>
+            <nav className="hidden items-center gap-1 md:flex">
+              {LINKS.map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground',
+                    pathname === to && 'bg-secondary text-secondary-foreground'
+                  )}
+                >
+                  <Icon className="size-4" />
+                  {label}
+                </Link>
+              ))}
+              {user.isAdmin && (
+                <Link
+                  key="/admin"
+                  to="/admin"
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground',
+                    pathname === '/admin' && 'bg-secondary text-secondary-foreground'
+                  )}
+                >
+                  <ShieldCheck className="size-4" />
+                  Admin
+                </Link>
               )}
-            >
-              <Icon className="size-4" />
-              {label}
-            </Link>
-          ))}
-          {user.isAdmin && (
-            <Link
-              key="/admin"
-              to="/admin"
-              className={cn(
-                'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground',
-                pathname === '/admin' && 'bg-secondary text-secondary-foreground'
-              )}
-            >
-              <ShieldCheck className="size-4" />
-              Admin
-            </Link>
-          )}
-        </nav>
+            </nav>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" className="rounded-full p-0.5" />}>
-            <Avatar>
-              <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem render={<Link to="/profile" />}>Profile</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={() => { logout(); navigate('/login'); }}>
-              <LogOut className="size-4" /> Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button variant="ghost" className="rounded-full p-0.5" />}>
+                <Avatar>
+                  <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem render={<Link to="/profile" />}>Profile</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={() => { logout(); navigate('/login'); }}>
+                  <LogOut className="size-4" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="border-foreground/25" asChild>
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+              <Link to="/signup">Get Started</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );

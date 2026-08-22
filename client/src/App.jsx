@@ -19,6 +19,7 @@ import Profile from './pages/Profile';
 import Community from './pages/Community';
 import Calendar from './pages/Calendar';
 import Admin from './pages/Admin';
+import Footer from './components/Footer';
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </AuthProvider>
   );

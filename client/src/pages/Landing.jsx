@@ -162,37 +162,7 @@ export default function Landing() {
         }}
       />
 
-      <header className="sticky top-0 z-20 border-b border-dashed border-[#16302B]/25 bg-[#FBF6ED]/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex size-9 items-center justify-center rounded-full bg-[#16302B] text-[#FBF6ED] shadow-sm">
-              <Globe2 className="size-4.5" />
-            </span>
-            <div className="leading-tight">
-              <p className="font-serif text-base font-semibold tracking-tight">GlobeTrotter</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#16302B]/55">
-                Gate&nbsp;01 · Trip&nbsp;Planning
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {token ? (
-              <Button className="bg-[#16302B] text-[#FBF6ED] hover:bg-[#16302B]/90" asChild>
-                <Link to="/dashboard">Go to Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button variant="outline" className="border-[#16302B]/25" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button className="bg-[#E15B4F] text-[#FBF6ED] hover:bg-[#E15B4F]/90" asChild>
-                  <Link to="/signup">Get Started</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+
 
       {/* ---------------- HERO ---------------- */}
       <section className="relative z-10 mx-auto max-w-6xl px-4 pb-14 pt-16 lg:px-8 lg:pt-24">

@@ -19,13 +19,21 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8">
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl bg-[linear-gradient(120deg,var(--primary)_0%,#6b7bd6_55%,var(--chart-3)_100%)] p-8 text-primary-foreground sm:flex-row sm:items-center">
-        <div>
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl bg-foreground p-8 text-background sm:flex-row sm:items-center relative overflow-hidden">
+        {/* faint ledger-line texture */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(180deg, var(--background) 0px, var(--background) 1px, transparent 1px, transparent 34px)',
+          }}
+        />
+        <div className="relative z-10">
           <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {user?.firstName}!</h1>
-          <p className="mt-1 text-primary-foreground/80">Where to next? Plan your next adventure.</p>
+          <p className="mt-1 text-background/80">Where to next? Plan your next adventure.</p>
         </div>
-        <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90" render={<Link to="/trips/new" />}>
-          <Plus className="size-4" /> Plan a Trip
+        <Button size="lg" className="relative z-10 bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+          <Link to="/trips/new"><Plus className="size-4 mr-1.5" /> Plan a Trip</Link>
         </Button>
       </div>
 

@@ -40,10 +40,10 @@ export default function Signup() {
 
   return (
     <AuthLayout>
-      <Card>
+      <Card className="border border-foreground/12 bg-background shadow-none">
         <CardHeader>
-          <CardTitle className="text-xl">Create your account</CardTitle>
-          <CardDescription>Tell us a bit about yourself to get started.</CardDescription>
+          <CardTitle className="font-serif text-2xl font-semibold tracking-tight">Create your account</CardTitle>
+          <CardDescription className="text-foreground/65">Tell us a bit about yourself to get started.</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
