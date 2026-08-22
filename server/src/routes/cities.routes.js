@@ -1,7 +1,9 @@
 const express = require('express');
 const prisma = require('../db');
+const { validateIntParam } = require('../middleware/params');
 
 const router = express.Router();
+router.param('id', validateIntParam('id'));
 
 router.get('/', async (req, res) => {
   const { search, country, region, sort } = req.query;

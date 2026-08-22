@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Search, Plus, Clock, DollarSign } from 'lucide-react';
 import request from '../api/client';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const CATEGORIES = ['sightseeing', 'food', 'adventure', 'culture', 'relaxation'];
 

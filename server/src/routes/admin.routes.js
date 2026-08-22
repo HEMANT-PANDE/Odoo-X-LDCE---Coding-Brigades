@@ -1,8 +1,10 @@
 const express = require('express');
 const prisma = require('../db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { validateIntParam } = require('../middleware/params');
 
 const router = express.Router();
+router.param('id', validateIntParam('id'));
 router.use(requireAuth, requireAdmin);
 
 router.get('/users', async (req, res) => {

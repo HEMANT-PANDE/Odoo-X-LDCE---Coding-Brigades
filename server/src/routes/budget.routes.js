@@ -2,8 +2,10 @@ const express = require('express');
 const prisma = require('../db');
 const { requireAuth } = require('../middleware/auth');
 const { computeBudget } = require('../services/budget');
+const { validateIntParam } = require('../middleware/params');
 
 const router = express.Router();
+router.param('tripId', validateIntParam('tripId'));
 
 router.get('/trips/:tripId/budget', requireAuth, async (req, res) => {
   const trip = await prisma.trip.findFirst({

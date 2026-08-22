@@ -9,10 +9,20 @@ implemented, full stack.
 
 ## Stack
 
-- Frontend: React (Vite)
+- Frontend: React (Vite) + Tailwind v4 + shadcn/ui (`base-nova` style, Base UI
+  primitives, not Radix) + lucide-react icons + Google Sans, light theme only
 - Backend: Node.js + Express
 - Database: PostgreSQL via Prisma (v6 — v7 requires driver adapters, more moving parts
   than a hackathon needs)
+
+### Design system
+
+Brand palette lives in `client/src/index.css` as CSS variables (`--primary: #525ea7`,
+`--accent: #ffc349`, plus `#5facd3`/`#97dde9` for chart tones 3-4). No dark-mode
+variant — deliberately light-only per the brand. shadcn components are generated
+source (not an npm package) in `client/src/components/ui/*` — edit them directly
+rather than reinstalling. Buttons/menu-items that act as router links use Base UI's
+`render={<Link .../>}` prop instead of Radix's `asChild`.
 
 ## Pages (all built)
 
