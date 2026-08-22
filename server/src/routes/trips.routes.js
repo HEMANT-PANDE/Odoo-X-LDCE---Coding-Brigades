@@ -1,8 +1,10 @@
 const express = require('express');
 const prisma = require('../db');
 const { requireAuth } = require('../middleware/auth');
+const { validateIntParam } = require('../middleware/params');
 
 const router = express.Router();
+router.param('id', validateIntParam('id'));
 
 function tripStatus(trip) {
   const now = new Date();

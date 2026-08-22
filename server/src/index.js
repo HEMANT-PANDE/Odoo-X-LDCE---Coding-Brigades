@@ -22,7 +22,7 @@ app.use('/api/admin', require('./routes/admin.routes'));
 // Centralized error handler — catches thrown/rejected errors from any route above.
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(err.status || err.statusCode || 500).json({ error: err.expose ? err.message : 'Internal server error' });
 });
 
 app.listen(config.port, () => console.log(`Server listening on http://localhost:${config.port}`));

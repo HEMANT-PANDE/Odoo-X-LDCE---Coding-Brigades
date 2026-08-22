@@ -1,9 +1,12 @@
 const express = require('express');
 const prisma = require('../db');
 const { requireAuth } = require('../middleware/auth');
+const { validateIntParam } = require('../middleware/params');
 
 // Mounted at /api — routes carry their own /trips/:tripId/stops and /stops prefixes.
 const router = express.Router();
+router.param('tripId', validateIntParam('tripId'));
+router.param('id', validateIntParam('id'));
 
 async function ownedTrip(tripId, userId) {
   return prisma.trip.findFirst({ where: { id: Number(tripId), userId } });
