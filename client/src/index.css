@@ -137,3 +137,50 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* FullCalendar reskin — matches the app's palette, light-only. */
+.gt-calendar {
+  --fc-border-color: var(--border);
+  --fc-neutral-bg-color: var(--muted);
+  --fc-page-bg-color: var(--card);
+  --fc-today-bg-color: color-mix(in oklch, var(--primary), transparent 92%);
+  --fc-button-bg-color: var(--secondary);
+  --fc-button-text-color: var(--secondary-foreground);
+  --fc-button-border-color: transparent;
+  --fc-button-hover-bg-color: var(--primary);
+  --fc-button-hover-text-color: var(--primary-foreground);
+  --fc-button-active-bg-color: var(--primary);
+  --fc-button-active-text-color: var(--primary-foreground);
+  --fc-event-text-color: #ffffff;
+  --fc-list-event-hover-bg-color: var(--muted);
+  font-family: "Google Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+.gt-calendar .fc-toolbar-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.gt-calendar .fc-button {
+  text-transform: capitalize;
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.75rem;
+  box-shadow: none !important;
+}
+.gt-calendar .fc-daygrid-day-number {
+  color: var(--foreground);
+  font-size: 0.8125rem;
+}
+.gt-calendar .fc-day-today .fc-daygrid-day-number {
+  color: var(--primary);
+  font-weight: 700;
+}
+.gt-calendar .fc-event {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 1px 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.gt-calendar .fc-list-event:hover td {
+  cursor: pointer;
+}

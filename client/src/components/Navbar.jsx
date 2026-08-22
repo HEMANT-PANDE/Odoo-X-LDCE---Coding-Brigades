@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe2, LayoutDashboard, Luggage, Search, CalendarDays, Users, ShieldCheck, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
@@ -65,29 +65,27 @@ export default function Navbar() {
             </nav>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-full p-0.5">
-                  <Avatar>
-                    <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
-                  </Avatar>
-                </Button>
+              <DropdownMenuTrigger render={<Button variant="ghost" className="rounded-full p-0.5" />}>
+                <Avatar>
+                  {user.photoUrl ? <AvatarImage src={user.photoUrl} /> : <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>}
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
+                <DropdownMenuItem render={<Link to="/profile" />}>Profile</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => { logout(); navigate('/login'); }}>
-                  <LogOut className="size-4 mr-2" /> Logout
+                  <LogOut className="size-4" /> Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         ) : (
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-foreground/25" asChild>
-              <Link to="/login">Login</Link>
+            <Button variant="outline" className="border-foreground/25" render={<Link to="/login" />}>
+              Login
             </Button>
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-              <Link to="/signup">Get Started</Link>
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90" render={<Link to="/signup" />}>
+              Get Started
             </Button>
           </div>
         )}

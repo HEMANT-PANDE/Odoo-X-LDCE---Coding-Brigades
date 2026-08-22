@@ -1,74 +1,51 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import listPlugin from '@fullcalendar/list';
+import interactionPlugin from '@fullcalendar/interaction';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import PageHeader from '../components/PageHeader';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const TRIP_COLORS = ['bg-primary', 'bg-[#303841]', 'bg-[#FF5722]', 'bg-[#5F7A7C]'];
+// Matches the --chart-1..5 tokens in index.css — cycled per trip for visual variety.
+const TRIP_COLORS = ['#ffc349', '#525ea7', '#5facd3', '#97dde9', '#8f4fd6'];
 
-function buildGrid(year, month) {
-  const first = new Date(year, month, 1);
-  const start = new Date(first);
-  start.setDate(start.getDate() - first.getDay());
-  return Array.from({ length: 42 }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    return d;
-  });
-}
-
-function tripsOnDay(trips, day) {
-  return trips.filter((t) => new Date(t.startDate) <= day && day <= new Date(t.endDate));
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d;
 }
 
 export default function Calendar() {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [trips, setTrips] = useState([]);
-  const [cursor, setCursor] = useState(new Date());
 
   useEffect(() => { request('/trips', { token }).then(setTrips); }, [token]);
 
-  const year = cursor.getFullYear();
-  const month = cursor.getMonth();
-  const grid = buildGrid(year, month);
-  const today = new Date();
+  const events = trips.map((t, i) => ({
+    id: String(t.id),
+    title: t.name,
+    start: t.startDate.slice(0, 10),
+    end: addDays(t.endDate, 1).toISOString().slice(0, 10), // FullCalendar's `end` is exclusive
+    color: TRIP_COLORS[i % TRIP_COLORS.length],
+  }));
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
       <PageHeader title="Calendar" description="See all your trips at a glance." />
 
-      <div className="mb-4 flex items-center justify-between">
-        <Button size="icon-sm" variant="outline" onClick={() => setCursor(new Date(year, month - 1, 1))}><ChevronLeft className="size-4" /></Button>
-        <h2 className="text-lg font-semibold">{cursor.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
-        <Button size="icon-sm" variant="outline" onClick={() => setCursor(new Date(year, month + 1, 1))}><ChevronRight className="size-4" /></Button>
-      </div>
-
-      <div className="grid grid-cols-7 gap-1.5">
-        {WEEKDAYS.map((w) => <div key={w} className="pb-1 text-center text-xs font-semibold text-muted-foreground">{w}</div>)}
-        {grid.map((day) => {
-          const isToday = day.toDateString() === today.toDateString();
-          const dayTrips = tripsOnDay(trips, day);
-          return (
-            <div
-              key={day.toISOString()}
-              className={cn(
-                'min-h-24 rounded-lg border border-border p-1.5 text-xs',
-                day.getMonth() !== month && 'bg-muted/40 text-muted-foreground',
-                isToday && 'border-primary'
-              )}
-            >
-              <span className={cn('inline-flex size-5 items-center justify-center rounded-full', isToday && 'bg-primary text-primary-foreground')}>{day.getDate()}</span>
-              <div className="mt-1 flex flex-col gap-0.5">
-                {dayTrips.map((t, i) => (
-                  <span key={t.id} className={cn('truncate rounded px-1 py-0.5 text-[10px] font-medium text-white', TRIP_COLORS[i % TRIP_COLORS.length])}>{t.name}</span>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      <div className="gt-calendar rounded-xl border border-border bg-card p-3 shadow-sm sm:p-5">
+        <FullCalendar
+          plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' }}
+          height="auto"
+          events={events}
+          eventClick={(info) => navigate(`/trips/${info.event.id}`)}
+          dayMaxEvents={3}
+        />
       </div>
     </div>
   );
