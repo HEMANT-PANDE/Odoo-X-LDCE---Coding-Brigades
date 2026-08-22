@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import PageHeader from '../components/PageHeader';
 
 // Matches the --chart-1..5 tokens in index.css — cycled per trip for visual variety.
-const TRIP_COLORS = ['#ffc349', '#525ea7', '#5facd3', '#97dde9', '#8f4fd6'];
+const TRIP_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
 
 function addDays(dateStr, days) {
   const d = new Date(dateStr);
