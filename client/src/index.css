@@ -1,13 +1,26 @@
+/* Google Sans Font — must be first */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   TAILWIND v3 Directives
+   ============================================================ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CSS Custom Properties (used by existing team pages)
+   ============================================================ */
 :root {
   --text: #2b2b33;
   --bg: #f7f7fb;
   --card-bg: #fff;
   --border: #e2e2ea;
-  --accent: #4f7cff;
+  --accent: #525EA7;
   --accent-text: #fff;
   --error: #d64545;
   --muted: #888;
-  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  font: 16px/1.5 'Google Sans', 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--bg);
 }
@@ -100,7 +113,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .form-row label { flex: 1; }
 
 .banner {
-  background: linear-gradient(135deg, var(--accent), #8f4fff);
+  background: linear-gradient(135deg, #525EA7, #5FACD3);
   color: #fff;
   border-radius: 10px;
   padding: 32px;
@@ -132,7 +145,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center; z-index: 10;
 }
-.modal { background: var(--card-bg); border-radius: 10px; padding: 20px; width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
+.modal { background: var(--card-bg); border-radius: 10px; padding: 20px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; }
 .modal-header button { background: transparent; color: var(--text); font-size: 20px; padding: 0 8px; }
 
@@ -149,3 +162,13 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table th, .admin-table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+
+/* Tailwind utility overrides for non-Tailwind pages */
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
