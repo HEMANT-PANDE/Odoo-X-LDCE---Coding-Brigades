@@ -12,8 +12,11 @@ export default function TripCard({ trip, onDelete }) {
   const stops = trip.stopCount ?? trip.stops?.length ?? null;
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-[#16302B]/12 bg-white/80 p-5 shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:bg-white hover:shadow-sm">
-      <div>
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-[#16302B]/12 bg-white/80 shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:bg-white hover:shadow-sm">
+      {trip.coverPhotoUrl && (
+        <img src={trip.coverPhotoUrl} alt="" className="h-32 w-full object-cover" />
+      )}
+      <div className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="font-serif font-semibold text-base text-[#16302B] line-clamp-1 group-hover:text-[#E15B4F] transition-colors">
@@ -42,7 +45,7 @@ export default function TripCard({ trip, onDelete }) {
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center gap-2 pt-3 border-t border-dashed border-[#16302B]/15">
+      <div className="flex items-center gap-2 px-5 pb-5 pt-3 border-t border-dashed border-[#16302B]/15">
         <Link
           to={`/trips/${trip.id}`}
           className="inline-flex items-center gap-1.5 rounded bg-[#16302B] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-[#FBF6ED] shadow-none transition-opacity hover:opacity-90"

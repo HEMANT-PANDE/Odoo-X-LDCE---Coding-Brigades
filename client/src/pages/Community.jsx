@@ -14,6 +14,7 @@ export default function Community() {
   const [posts, setPosts] = useState([]);
   const [search, setSearch] = useState('');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   function load() {
     const params = search ? `?search=${encodeURIComponent(search)}` : '';
@@ -25,8 +26,9 @@ export default function Community() {
   async function handlePost(e) {
     e.preventDefault();
     if (!content.trim()) return;
-    await request('/community', { method: 'POST', token, body: { content } });
+    await request('/community', { method: 'POST', token, body: { content, imageUrl: imageUrl.trim() || undefined } });
     setContent('');
+    setImageUrl('');
     load();
   }
 
@@ -43,6 +45,7 @@ export default function Community() {
         <CardContent>
           <form className="flex flex-col gap-3" onSubmit={handlePost}>
             <Textarea placeholder="Share something about a trip or activity..." value={content} onChange={(e) => setContent(e.target.value)} />
+            <Input placeholder="Image URL (optional)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
             <Button type="submit" className="self-end"><Send className="size-4" /> Post</Button>
           </form>
         </CardContent>
@@ -60,7 +63,12 @@ export default function Community() {
             <Card key={p.id}>
               <CardContent className="flex gap-3">
                 <Avatar>
+<<<<<<< Updated upstream
                   {p.user.photoUrl ? <AvatarImage src={p.user.photoUrl} /> : <AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback>}
+=======
+                  {p.user.photoUrl && <AvatarImage src={p.user.photoUrl} alt={initials} />}
+                  <AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback>
+>>>>>>> Stashed changes
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -68,6 +76,9 @@ export default function Community() {
                     {p.trip && <span className="text-xs text-muted-foreground">· {p.trip.name}</span>}
                   </div>
                   <p className="mt-1 text-sm">{p.content}</p>
+                  {p.imageUrl && (
+                    <img src={p.imageUrl} alt="" className="mt-2 max-h-64 w-full rounded-lg object-cover" />
+                  )}
                   <p className="mt-1 text-xs text-muted-foreground">{new Date(p.createdAt).toLocaleString()}</p>
                 </div>
                 {p.user.id === user?.id && (

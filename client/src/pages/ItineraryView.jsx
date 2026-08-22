@@ -166,7 +166,7 @@ export default function ItineraryView() {
                               <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
                                 <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
                               </span>
-                              <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-gray-100'}`}>
+                              <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-muted'}`}>
                                 {sa.activity.category}
                               </span>
                             </div>

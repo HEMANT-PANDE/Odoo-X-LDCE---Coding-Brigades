@@ -17,7 +17,7 @@ function sign(user) {
 }
 
 router.post('/signup', async (req, res) => {
-  const { firstName, lastName, email, password, phone, city, country, bio } = req.body;
+  const { firstName, lastName, email, password, phone, city, country, bio, photoUrl } = req.body;
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({ error: 'firstName, lastName, email and password are required' });
   }
@@ -26,7 +26,7 @@ router.post('/signup', async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { firstName, lastName, email, passwordHash, phone, city, country, bio },
+    data: { firstName, lastName, email, passwordHash, phone, city, country, bio, photoUrl },
   });
   res.status(201).json({ token: sign(user), user: toPublicUser(user) });
 });
