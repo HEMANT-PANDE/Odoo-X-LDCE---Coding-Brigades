@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* ─── Our theme — declared AFTER shadcn so we always override it ─── */
 :root {
   --background: #FBF6ED;
   --foreground: #16302B;
@@ -34,7 +35,7 @@
 
   --radius: 0.875rem;
 
-  /* Legacy CSS vars for existing pages */
+  /* Legacy CSS vars */
   --text: #16302B;
   --bg: #FBF6ED;
   --card-bg: #FBF6ED;
@@ -42,8 +43,36 @@
   --error: #d64545;
 }
 
+/* dark mode — keep our same palette, just keep it consistent */
+.dark {
+  --background: #16302B;
+  --foreground: #FBF6ED;
+  --card: #1f4a3e;
+  --card-foreground: #FBF6ED;
+  --popover: #1f4a3e;
+  --popover-foreground: #FBF6ED;
+
+  --primary: #FBF6ED;
+  --primary-foreground: #16302B;
+  --secondary: #2d6b5a;
+  --secondary-foreground: #FBF6ED;
+  --muted: #234035;
+  --muted-foreground: #9AB5AB;
+  --accent: #E15B4F;
+  --accent-foreground: #FBF6ED;
+  --destructive: #d64545;
+  --destructive-foreground: #ffffff;
+
+  --border: #2d5248;
+  --input: #2d5248;
+  --ring: #FBF6ED;
+}
+
 @theme inline {
-  --font-sans: "Google Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -81,15 +110,20 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    /* Use our theme tokens — NOT hardcoded slate colours */
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
-    font-family: "Google Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   html {
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-tight;
+    font-family: "Playfair Display", Georgia, serif;
+    @apply tracking-tight;
   }
 }
 

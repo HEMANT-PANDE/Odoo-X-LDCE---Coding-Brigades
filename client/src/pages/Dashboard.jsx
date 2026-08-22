@@ -39,7 +39,7 @@ export default function Dashboard() {
             <div className="max-w-xl space-y-3">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-[#16302B]/20 bg-[#FBF6ED] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-[#16302B]/70">
                 <PlaneTakeoff className="size-3.5 text-[#E15B4F]" />
-                <span>Gate 01 · Travel Dashboard</span>
+                <span>Travel Dashboard</span>
               </div>
               <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl text-[#16302B]">
                 Welcome back, {firstName}.
