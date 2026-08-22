@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  trips        Trip[]
+
+  @@map("users")
+}
+
+/// Seeded catalog city — read-only from the app's perspective.
+model City {
+  id         Int         @id @default(autoincrement())
+  name       String
+  country    String
+  region     String?
+  costIndex  Decimal     @map("cost_index") @db.Decimal(6, 2)
+  popularity Int         @default(0)
+  imageUrl   String?     @map("image_url")
+  activities Activity[]
+  stops      TripStop[]
+
+  @@index([name])
+  @@map("cities")
+}
+
+/// Seeded catalog activity, scoped to a city.
+model Activity {
+  id             Int        @id @default(autoincrement())
+  cityId         Int        @map("city_id")
+  city           City       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  category       String // 'sightseeing' | 'food' | 'adventure' | 'culture' | 'relaxation'
+  cost           Decimal    @default(0) @db.Decimal(8, 2)
+  durationHours  Decimal    @default(1) @map("duration_hours") @db.Decimal(4, 1)
+  imageUrl       String?    @map("image_url")
+  stopActivities TripStopActivity[]
+
+  @@index([cityId])
+  @@map("activities")
+}
+
+model Trip {
+  id                      Int        @id @default(autoincrement())
+  userId                  Int        @map("user_id")
+  user                    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                    String
+  startDate               DateTime   @map("start_date") @db.Date
+  endDate                 DateTime   @map("end_date") @db.Date
+  description             String?
+  coverPhotoUrl           String?    @map("cover_photo_url")
+  budgetTransportPerStop  Decimal?   @map("budget_transport_per_stop") @db.Decimal(8, 2)
+  budgetStayPerDay        Decimal?   @map("budget_stay_per_day") @db.Decimal(8, 2)
+  budgetMealsPerDay       Decimal?   @map("budget_meals_per_day") @db.Decimal(8, 2)
+  totalBudget             Decimal?   @map("total_budget") @db.Decimal(10, 2)
+  createdAt               DateTime   @default(now()) @map("created_at")
+  stops                   TripStop[]
+
+  @@index([userId])
+  @@map("trips")
+}
+
+/// A city visited within a trip, with its own date range.
+model TripStop {
+  id         Int                @id @default(autoincrement())
+  tripId     Int                @map("trip_id")
+  trip       Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  cityId     Int                @map("city_id")
+  city       City               @relation(fields: [cityId], references: [id])
+  startDate  DateTime           @map("start_date") @db.Date
+  endDate    DateTime           @map("end_date") @db.Date
+  sortOrder  Int                @default(0) @map("sort_order")
+  activities TripStopActivity[]
+
+  @@index([tripId])
+  @@map("trip_stops")
+}
+
+/// An activity scheduled into a specific stop.
+model TripStopActivity {
+  id             Int       @id @default(autoincrement())
+  tripStopId     Int       @map("trip_stop_id")
+  tripStop       TripStop  @relation(fields: [tripStopId], references: [id], onDelete: Cascade)
+  activityId     Int       @map("activity_id")
+  activity       Activity  @relation(fields: [activityId], references: [id])
+  scheduledDate  DateTime  @map("scheduled_date") @db.Date
+  scheduledTime  DateTime? @map("scheduled_time") @db.Time
+  costOverride   Decimal?  @map("cost_override") @db.Decimal(8, 2)
+  notes          String?
+
+  @@index([tripStopId])
+  @@map("trip_stop_activities")
+}

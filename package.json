@@ -1,0 +1,13 @@
+{
+  "name": "globetrotter",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
