@@ -84,11 +84,10 @@ export default function ItineraryBuilder() {
 
   async function handleAddActivity(stopId, activity) {
     const stop = trip.stops.find((s) => s.id === stopId);
-    await request(`/stops/${stopId}/activities`, {
-      method: 'POST',
-      token,
-      body: { activityId: activity.id, scheduledDate: stop.startDate.slice(0, 10) },
-    });
+    const body = activity.source === 'live'
+      ? { liveActivity: activity, scheduledDate: stop.startDate.slice(0, 10) }
+      : { activityId: activity.id, scheduledDate: stop.startDate.slice(0, 10) };
+    await request(`/stops/${stopId}/activities`, { method: 'POST', token, body });
     setAddingActivityFor(null);
     reload();
     toast.success('Activity booked onto itinerary');

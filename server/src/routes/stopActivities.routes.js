@@ -32,14 +32,35 @@ router.post('/stops/:stopId/activities', requireAuth, async (req, res) => {
   const stop = await ownedStop(req.params.stopId, req.user.id);
   if (!stop) return res.status(404).json({ error: 'Stop not found' });
 
-  const { activityId, scheduledDate, scheduledTime, costOverride, notes } = req.body;
-  if (!activityId || !scheduledDate) return res.status(400).json({ error: 'activityId and scheduledDate are required' });
+  const { activityId, liveActivity, scheduledDate, scheduledTime, costOverride, notes } = req.body;
+  if (!scheduledDate || (!activityId && !liveActivity)) {
+    return res.status(400).json({ error: 'activityId (or liveActivity) and scheduledDate are required' });
+  }
   if (!withinStopDates(stop, scheduledDate)) return res.status(400).json({ error: 'scheduledDate must fall within the stop dates' });
+
+  let resolvedActivityId = activityId ? Number(activityId) : null;
+  if (!resolvedActivityId && liveActivity) {
+    // A live (external API) activity has no catalog row yet — materialize one, deduped by city+name.
+    const upserted = await prisma.activity.upsert({
+      where: { cityId_name: { cityId: stop.cityId, name: liveActivity.name } },
+      update: {},
+      create: {
+        cityId: stop.cityId,
+        name: liveActivity.name,
+        description: liveActivity.description || null,
+        category: liveActivity.category,
+        cost: liveActivity.cost ?? 0,
+        durationHours: liveActivity.durationHours ?? 1,
+        imageUrl: liveActivity.imageUrl || null,
+      },
+    });
+    resolvedActivityId = upserted.id;
+  }
 
   const created = await prisma.tripStopActivity.create({
     data: {
       tripStopId: stop.id,
-      activityId: Number(activityId),
+      activityId: resolvedActivityId,
       scheduledDate: new Date(scheduledDate),
       scheduledTime: scheduledTime ? new Date(`1970-01-01T${scheduledTime}`) : null,
       costOverride,

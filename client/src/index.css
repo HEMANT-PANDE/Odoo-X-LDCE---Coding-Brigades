@@ -141,21 +141,21 @@
 /* FullCalendar reskin — matches the app's palette, light-only. */
 .gt-calendar {
   --fc-border-color: var(--border);
-  --fc-neutral-bg-color: var(--muted);
+  --fc-neutral-bg-color: color-mix(in srgb, #EEA89E 14%, var(--card));
   --fc-page-bg-color: var(--card);
-  --fc-today-bg-color: color-mix(in oklch, var(--primary), transparent 92%);
-  --fc-button-bg-color: var(--secondary);
-  --fc-button-text-color: var(--secondary-foreground);
-  --fc-button-border-color: transparent;
-  --fc-button-hover-bg-color: var(--primary);
-  --fc-button-hover-text-color: var(--primary-foreground);
-  --fc-button-active-bg-color: var(--primary);
-  --fc-button-active-text-color: var(--primary-foreground);
+  --fc-today-bg-color: color-mix(in srgb, var(--primary) 8%, var(--card));
+  --fc-button-bg-color: var(--background);
+  --fc-button-text-color: var(--foreground);
+  --fc-button-border-color: var(--border);
+  --fc-button-hover-bg-color: var(--muted);
+  --fc-button-active-bg-color: var(--muted);
+  --fc-button-active-border-color: var(--primary);
   --fc-event-text-color: #ffffff;
   --fc-list-event-hover-bg-color: var(--muted);
-  font-family: "Google Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 .gt-calendar .fc-toolbar-title {
+  font-family: "Playfair Display", Georgia, serif;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--foreground);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { PieChart, MapPin, Edit3, Wallet, CalendarRange, Clock } from 'lucide-react';
+import { MapPin, Edit3, Wallet, CalendarRange, Landmark, UtensilsCrossed, Mountain, Theater, Waves } from 'lucide-react';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,8 +9,14 @@ function dayNumber(tripStart, date) {
   return Math.floor(ms / 86400000) + 1;
 }
 
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 const CATEGORY_ICONS = {
-  sightseeing: '🏛️', food: '🍜', adventure: '🧗', culture: '🎭', relaxation: '🧘',
+  sightseeing: Landmark, food: UtensilsCrossed, adventure: Mountain, culture: Theater, relaxation: Waves,
 };
 
 const CATEGORY_BADGES = {
@@ -52,7 +58,15 @@ export default function ItineraryView() {
       (byDay[day] ??= []).push({ ...sa, cityName: stop.city.name });
     }
   }
-  const days = Object.keys(byDay).map(Number).sort((a, b) => a - b);
+
+  const stopsSorted = [...trip.stops].sort((a, b) => a.sortOrder - b.sortOrder);
+  function stopForDay(day) {
+    const date = addDays(trip.startDate, day - 1);
+    return stopsSorted.find((s) => date >= new Date(s.startDate) && date <= new Date(s.endDate));
+  }
+
+  const tripDayCount = Math.floor((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000) + 1;
+  const days = trip.stops.length === 0 ? [] : Array.from({ length: tripDayCount }, (_, i) => i + 1);
 
   const totalCities = [...new Set(trip.stops.map((s) => s.city.name))];
   const totalActivities = trip.stops.reduce((sum, s) => sum + s.activities.length, 0);
@@ -137,59 +151,79 @@ export default function ItineraryView() {
           </div>
         ) : (
           <div className="space-y-4">
-            {days.map((day) => (
-              <div key={day} className="rounded-xl border border-[#16302B]/12 bg-white overflow-hidden shadow-none">
-                {/* Day Header */}
-                <div className="flex items-center justify-between border-b border-dashed border-[#16302B]/12 bg-[#FBF6ED]/50 px-6 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-7 items-center justify-center rounded-lg bg-[#16302B] text-[#FBF6ED] font-mono text-xs font-bold">
-                      {day}
+            {days.map((day) => {
+              const dayActivities = byDay[day] || [];
+              const stop = stopForDay(day);
+              return (
+                <div key={day} className="rounded-xl border border-[#16302B]/12 bg-white overflow-hidden shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:shadow-sm">
+                  {/* Day Header */}
+                  <div className="flex items-center justify-between border-b border-dashed border-[#16302B]/12 bg-[#FBF6ED]/50 px-6 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-7 items-center justify-center rounded-lg bg-[#16302B] text-[#FBF6ED] font-mono text-xs font-bold">
+                        {day}
+                      </span>
+                      <div>
+                        <h3 className="font-serif text-base font-semibold text-[#16302B]">Day {day}</h3>
+                        {stop && (
+                          <p className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
+                            <MapPin className="size-3 text-[#E15B4F]" /> {stop.city.name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-mono text-xs text-[#16302B]/50">
+                      {dayActivities.length} {dayActivities.length === 1 ? 'activity' : 'activities'}
                     </span>
-                    <h3 className="font-serif text-base font-semibold text-[#16302B]">Day {day}</h3>
                   </div>
-                  <span className="font-mono text-xs text-[#16302B]/50">
-                    {byDay[day].length} {byDay[day].length === 1 ? 'activity' : 'activities'}
-                  </span>
-                </div>
 
-                {/* Day Activities */}
-                <ul className="divide-y divide-[#16302B]/10">
-                  {byDay[day]
-                    .sort((a, b) => (a.scheduledTime || '').localeCompare(b.scheduledTime || ''))
-                    .map((sa) => (
-                      <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-[#FBF6ED]/40 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <span className="flex size-7 items-center justify-center rounded bg-[#FBF6ED] border border-[#16302B]/15 text-[#16302B]">
-                            <Ticket className="size-3.5" />
-                          </span>
-                          <div>
-                            <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
-                                <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
-                              </span>
-                              <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-muted'}`}>
-                                {sa.activity.category}
-                              </span>
+                  {/* Day Activities */}
+                  {dayActivities.length === 0 ? (
+                    <p className="px-6 py-4 font-mono text-xs italic text-[#16302B]/45">
+                      {stop ? `Free day in ${stop.city.name} — nothing booked yet.` : 'No stop covers this day yet.'}
+                    </p>
+                  ) : (
+                    <ul className="divide-y divide-[#16302B]/10">
+                      {dayActivities
+                        .sort((a, b) => (a.scheduledTime || '').localeCompare(b.scheduledTime || ''))
+                        .map((sa) => {
+                          const Icon = CATEGORY_ICONS[sa.activity.category] || MapPin;
+                          return (
+                          <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-[#FBF6ED]/40 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <Icon className="size-4 text-[#16302B]/70 flex-shrink-0" />
+                              <div>
+                                <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
+                                    <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
+                                  </span>
+                                  <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-muted'}`}>
+                                    {sa.activity.category}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <span className="font-mono text-xs font-semibold text-[#16302B]">
-                          ${Number(sa.costOverride ?? sa.activity.cost)}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
+                            <span className="font-mono text-xs font-semibold text-[#16302B]">
+                              ${Number(sa.costOverride ?? sa.activity.cost)}
+                            </span>
+                          </li>
+                          );
+                        })}
+                    </ul>
+                  )}
 
-                {/* Day total footer */}
-                <div className="flex justify-between border-t border-dashed border-[#16302B]/12 bg-[#FBF6ED]/30 px-6 py-2.5 font-mono text-[11px] text-[#16302B]/60">
-                  <span>Day {day} Subtotal</span>
-                  <span className="font-bold text-[#16302B]">
-                    ${byDay[day].reduce((s, sa) => s + Number(sa.costOverride ?? sa.activity.cost), 0).toFixed(2)}
-                  </span>
+                  {/* Day total footer */}
+                  {dayActivities.length > 0 && (
+                    <div className="flex justify-between border-t border-dashed border-[#16302B]/12 bg-[#FBF6ED]/30 px-6 py-2.5 font-mono text-[11px] text-[#16302B]/60">
+                      <span>Day {day} Subtotal</span>
+                      <span className="font-bold text-[#16302B]">
+                        ${dayActivities.reduce((s, sa) => s + Number(sa.costOverride ?? sa.activity.cost), 0).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

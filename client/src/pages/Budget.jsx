@@ -4,7 +4,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye, Plane, Building, Utensils, Ticket } from 'lucide-react';
+import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye, Plane, Hotel, UtensilsCrossed, Target } from 'lucide-react';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,9 +25,9 @@ function CustomLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
 
 const BREAKDOWN_ICONS = {
   transport: Plane,
-  stay: Building,
-  meals: Utensils,
-  activities: Ticket,
+  stay: Hotel,
+  meals: UtensilsCrossed,
+  activities: Target,
 };
 
 export default function Budget() {
@@ -151,12 +151,10 @@ export default function Budget() {
         {/* Breakdown Category Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {Object.entries(budget.breakdown).map(([key, val]) => {
-            const IconComp = BREAKDOWN_ICONS[key] || Ticket;
+            const Icon = BREAKDOWN_ICONS[key];
             return (
-              <div key={key} className="rounded-xl border border-[#16302B]/12 bg-white p-5 text-center shadow-none flex flex-col items-center justify-center">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-[#16302B]/5 text-[#16302B] mb-2">
-                  <IconComp className="size-5 text-[#16302B]" />
-                </span>
+              <div key={key} className="rounded-xl border border-[#16302B]/12 bg-white p-5 text-center shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:shadow-sm">
+                <Icon className="mx-auto mb-2 size-6 text-[#E15B4F]" />
                 <p className="font-serif text-xl font-bold text-[#16302B]">${val}</p>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-[#16302B]/50 capitalize mt-0.5">{key}</p>
               </div>
