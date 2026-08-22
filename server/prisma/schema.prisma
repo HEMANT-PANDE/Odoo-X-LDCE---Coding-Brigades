@@ -30,7 +30,7 @@ model User {
 /// Seeded catalog city — read-only from the app's perspective.
 model City {
   id         Int         @id @default(autoincrement())
-  name       String
+  name       String      @unique
   country    String
   region     String?
   costIndex  Decimal     @map("cost_index") @db.Decimal(6, 2)
