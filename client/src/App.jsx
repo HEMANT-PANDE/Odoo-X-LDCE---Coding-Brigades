@@ -20,9 +20,8 @@ import Profile from './pages/Profile';
 import Community from './pages/Community';
 import Calendar from './pages/Calendar';
 import Admin from './pages/Admin';
-
-/* Pages that render their own footer (Landing has it inline) */
-const NO_FOOTER_ROUTES = ['/'];
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 function AppShell() {
   return (
@@ -34,6 +33,8 @@ function AppShell() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
         <Route path="/trips/new" element={<ProtectedRoute><CreateTrip /></ProtectedRoute>} />

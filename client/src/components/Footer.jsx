@@ -119,9 +119,9 @@ export default function Footer() {
         <div className="mt-10 border-t border-dashed border-[#16302B]/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px] text-[#16302B]/45">
           <p>© {year} GlobeTrotter · LDCE Coding Brigades · Odoo Hackathon 2026</p>
           <div className="flex gap-4">
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>Contact</span>
+            <Link to="/privacy" className="hover:text-[#16302B] transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-[#16302B] transition-colors">Terms</Link>
+            <a href="mailto:contact@globetrotter.dev" className="hover:text-[#16302B] transition-colors">Contact</a>
           </div>
         </div>
       </div>
