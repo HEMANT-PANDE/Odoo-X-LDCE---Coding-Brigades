@@ -1,15 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, MapPin, PlaneTakeoff } from 'lucide-react';
-import request from '../api/client';
+import { ArrowRight, Globe, ImagePlus, Loader2, Lock, MapPin, PlaneTakeoff, X } from 'lucide-react';
+import { toast } from 'sonner';
+import request, { uploadPhoto } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 export default function CreateTrip() {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', startDate: '', endDate: '', description: '' });
+  const [form, setForm] = useState({ name: '', startDate: '', endDate: '', description: '', isPublic: false, coverPhotoUrl: '' });
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
+
+  async function handleCoverFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadPhoto(file, token);
+      setForm((f) => ({ ...f, coverPhotoUrl: url }));
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   useEffect(() => {
     request('/cities?sort=popularity').then((c) => setSuggestions(c.slice(0, 6)));
@@ -131,6 +149,57 @@ export default function CreateTrip() {
                 value={form.description}
                 onChange={set('description')}
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-foreground/70">
+                Cover Photo (Optional)
+              </label>
+              {form.coverPhotoUrl ? (
+                <div className="relative w-fit">
+                  <img src={form.coverPhotoUrl} alt="" className="h-32 rounded-xl object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, coverPhotoUrl: '' })}
+                    className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-foreground text-background"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={uploading}
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center gap-2 rounded-xl border border-dashed border-border px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-accent hover:text-accent"
+                >
+                  {uploading ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
+                  {uploading ? 'Uploading...' : 'Upload a cover photo'}
+                </button>
+              )}
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverFile} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-foreground/70">
+                Visibility
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, isPublic: false })}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${!form.isPublic ? 'border-accent bg-accent/10 text-accent' : 'border-border text-muted-foreground'}`}
+                >
+                  <Lock className="size-4" /> Private — just me
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, isPublic: true })}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${form.isPublic ? 'border-accent bg-accent/10 text-accent' : 'border-border text-muted-foreground'}`}
+                >
+                  <Globe className="size-4" /> Public — anyone can browse
+                </button>
+              </div>
             </div>
 
             <div className="pt-2">

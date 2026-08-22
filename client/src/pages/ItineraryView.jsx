@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { MapPin, Edit3, Wallet, CalendarRange, Landmark, UtensilsCrossed, Mountain, Theater, Waves } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  MapPin, Edit3, Wallet, CalendarRange, Landmark, UtensilsCrossed, Mountain, Theater, Waves,
+  ChevronDown, GripVertical, Pencil, Trash2, Check, X,
+} from 'lucide-react';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +17,12 @@ function addDays(dateStr, days) {
   const d = new Date(dateStr);
   d.setDate(d.getDate() + days);
   return d;
+}
+
+function formatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
 const CATEGORY_ICONS = {
@@ -32,12 +42,18 @@ export default function ItineraryView() {
   const { token } = useAuth();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [collapsedDays, setCollapsedDays] = useState(() => new Set());
+  const [draggedId, setDraggedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({ scheduledDate: '', scheduledTime: '', costOverride: '', notes: '' });
 
-  useEffect(() => {
+  function load() {
     request(`/trips/${tripId}`, { token })
       .then(setTrip)
       .finally(() => setLoading(false));
-  }, [tripId]);
+  }
+
+  useEffect(load, [tripId]);
 
   if (loading) {
     return (
@@ -55,14 +71,82 @@ export default function ItineraryView() {
   for (const stop of trip.stops) {
     for (const sa of stop.activities) {
       const day = dayNumber(trip.startDate, sa.scheduledDate);
-      (byDay[day] ??= []).push({ ...sa, cityName: stop.city.name });
+      (byDay[day] ??= []).push({ ...sa, cityName: stop.city.name, stopId: stop.id });
     }
+  }
+  for (const day in byDay) {
+    byDay[day].sort((a, b) => (a.scheduledTime || '').localeCompare(b.scheduledTime || ''));
   }
 
   const stopsSorted = [...trip.stops].sort((a, b) => a.sortOrder - b.sortOrder);
   function stopForDay(day) {
     const date = addDays(trip.startDate, day - 1);
     return stopsSorted.find((s) => date >= new Date(s.startDate) && date <= new Date(s.endDate));
+  }
+
+  function toggleDay(day) {
+    setCollapsedDays((prev) => {
+      const next = new Set(prev);
+      next.has(day) ? next.delete(day) : next.add(day);
+      return next;
+    });
+  }
+
+  function startEdit(sa) {
+    setEditingId(sa.id);
+    setEditForm({
+      scheduledDate: sa.scheduledDate.slice(0, 10),
+      scheduledTime: formatTime(sa.scheduledTime),
+      costOverride: sa.costOverride ?? '',
+      notes: sa.notes ?? '',
+    });
+  }
+
+  async function saveEdit(id) {
+    try {
+      await request(`/stop-activities/${id}`, {
+        method: 'PUT',
+        token,
+        body: {
+          scheduledDate: editForm.scheduledDate,
+          scheduledTime: editForm.scheduledTime || null,
+          costOverride: editForm.costOverride === '' ? null : Number(editForm.costOverride),
+          notes: editForm.notes || null,
+        },
+      });
+      setEditingId(null);
+      load();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm('Remove this activity from the itinerary?')) return;
+    await request(`/stop-activities/${id}`, { method: 'DELETE', token });
+    toast.success('Activity removed');
+    load();
+  }
+
+  // No dedicated sort-order column on stop-activities — reordering reassigns each
+  // activity a fresh hourly slot (09:00, 10:00, ...) in the new drop order.
+  async function handleDrop(dayActivities, dropIndex) {
+    const sourceIndex = dayActivities.findIndex((a) => a.id === draggedId);
+    setDraggedId(null);
+    if (sourceIndex === -1 || sourceIndex === dropIndex) return;
+
+    const reordered = [...dayActivities];
+    const [moved] = reordered.splice(sourceIndex, 1);
+    reordered.splice(dropIndex, 0, moved);
+
+    try {
+      await Promise.all(reordered.map((a, i) =>
+        request(`/stop-activities/${a.id}`, { method: 'PUT', token, body: { scheduledTime: `${String(9 + i).padStart(2, '0')}:00` } })
+      ));
+      load();
+    } catch (err) {
+      toast.error(err.message);
+    }
   }
 
   const tripDayCount = Math.floor((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000) + 1;
@@ -154,10 +238,14 @@ export default function ItineraryView() {
             {days.map((day) => {
               const dayActivities = byDay[day] || [];
               const stop = stopForDay(day);
+              const isCollapsed = collapsedDays.has(day);
               return (
-                <div key={day} className="rounded-xl border border-[#16302B]/12 bg-white overflow-hidden shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:shadow-sm">
+                <div key={day} className="rounded-xl border border-[#16302B]/12 bg-white overflow-hidden shadow-none transition-all duration-200 hover:border-[#16302B]/30 hover:shadow-sm">
                   {/* Day Header */}
-                  <div className="flex items-center justify-between border-b border-dashed border-[#16302B]/12 bg-[#FBF6ED]/50 px-6 py-3.5">
+                  <button
+                    onClick={() => toggleDay(day)}
+                    className="flex w-full items-center justify-between border-b border-dashed border-[#16302B]/12 bg-[#FBF6ED]/50 px-6 py-3.5 text-left"
+                  >
                     <div className="flex items-center gap-3">
                       <span className="flex size-7 items-center justify-center rounded-lg bg-[#16302B] text-[#FBF6ED] font-mono text-xs font-bold">
                         {day}
@@ -171,55 +259,124 @@ export default function ItineraryView() {
                         )}
                       </div>
                     </div>
-                    <span className="font-mono text-xs text-[#16302B]/50">
-                      {dayActivities.length} {dayActivities.length === 1 ? 'activity' : 'activities'}
-                    </span>
-                  </div>
-
-                  {/* Day Activities */}
-                  {dayActivities.length === 0 ? (
-                    <p className="px-6 py-4 font-mono text-xs italic text-[#16302B]/45">
-                      {stop ? `Free day in ${stop.city.name} — nothing booked yet.` : 'No stop covers this day yet.'}
-                    </p>
-                  ) : (
-                    <ul className="divide-y divide-[#16302B]/10">
-                      {dayActivities
-                        .sort((a, b) => (a.scheduledTime || '').localeCompare(b.scheduledTime || ''))
-                        .map((sa) => {
-                          const Icon = CATEGORY_ICONS[sa.activity.category] || MapPin;
-                          return (
-                          <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-[#FBF6ED]/40 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <Icon className="size-4 text-[#16302B]/70 flex-shrink-0" />
-                              <div>
-                                <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
-                                    <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
-                                  </span>
-                                  <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-muted'}`}>
-                                    {sa.activity.category}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <span className="font-mono text-xs font-semibold text-[#16302B]">
-                              ${Number(sa.costOverride ?? sa.activity.cost)}
-                            </span>
-                          </li>
-                          );
-                        })}
-                    </ul>
-                  )}
-
-                  {/* Day total footer */}
-                  {dayActivities.length > 0 && (
-                    <div className="flex justify-between border-t border-dashed border-[#16302B]/12 bg-[#FBF6ED]/30 px-6 py-2.5 font-mono text-[11px] text-[#16302B]/60">
-                      <span>Day {day} Subtotal</span>
-                      <span className="font-bold text-[#16302B]">
-                        ${dayActivities.reduce((s, sa) => s + Number(sa.costOverride ?? sa.activity.cost), 0).toFixed(2)}
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-[#16302B]/50">
+                        {dayActivities.length} {dayActivities.length === 1 ? 'activity' : 'activities'}
                       </span>
+                      <ChevronDown className={`size-4 text-[#16302B]/50 transition-transform ${isCollapsed ? '-rotate-90' : ''}`} />
                     </div>
+                  </button>
+
+                  {!isCollapsed && (
+                    <>
+                      {/* Day Activities */}
+                      {dayActivities.length === 0 ? (
+                        <p className="px-6 py-4 font-mono text-xs italic text-[#16302B]/45">
+                          {stop ? `Free day in ${stop.city.name} — nothing booked yet.` : 'No stop covers this day yet.'}
+                        </p>
+                      ) : (
+                        <ul className="divide-y divide-[#16302B]/10">
+                          {dayActivities.map((sa, index) => {
+                            const Icon = CATEGORY_ICONS[sa.activity.category] || MapPin;
+                            const isEditing = editingId === sa.id;
+                            return (
+                              <li
+                                key={sa.id}
+                                draggable={!isEditing}
+                                onDragStart={() => setDraggedId(sa.id)}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={() => handleDrop(dayActivities, index)}
+                                className={`px-6 py-3.5 transition-colors ${draggedId === sa.id ? 'opacity-40' : 'hover:bg-[#FBF6ED]/40'}`}
+                              >
+                                {isEditing ? (
+                                  <div className="flex flex-wrap items-end gap-2.5">
+                                    <div>
+                                      <label className="block font-mono text-[9px] uppercase text-[#16302B]/45">Date</label>
+                                      <input
+                                        type="date"
+                                        value={editForm.scheduledDate}
+                                        onChange={(e) => setEditForm({ ...editForm, scheduledDate: e.target.value })}
+                                        className="rounded border border-[#16302B]/20 px-2 py-1 text-xs"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block font-mono text-[9px] uppercase text-[#16302B]/45">Time</label>
+                                      <input
+                                        type="time"
+                                        value={editForm.scheduledTime}
+                                        onChange={(e) => setEditForm({ ...editForm, scheduledTime: e.target.value })}
+                                        className="rounded border border-[#16302B]/20 px-2 py-1 text-xs"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block font-mono text-[9px] uppercase text-[#16302B]/45">Cost $</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={editForm.costOverride}
+                                        onChange={(e) => setEditForm({ ...editForm, costOverride: e.target.value })}
+                                        className="w-20 rounded border border-[#16302B]/20 px-2 py-1 text-xs"
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-[120px]">
+                                      <label className="block font-mono text-[9px] uppercase text-[#16302B]/45">Notes</label>
+                                      <input
+                                        type="text"
+                                        value={editForm.notes}
+                                        onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                                        className="w-full rounded border border-[#16302B]/20 px-2 py-1 text-xs"
+                                      />
+                                    </div>
+                                    <button onClick={() => saveEdit(sa.id)} className="text-[#7FA593] hover:text-[#16302B]"><Check className="size-4" /></button>
+                                    <button onClick={() => setEditingId(null)} className="text-[#16302B]/40 hover:text-[#E15B4F]"><X className="size-4" /></button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <GripVertical className="size-4 text-[#16302B]/25 cursor-grab flex-shrink-0" />
+                                      <Icon className="size-4 text-[#16302B]/70 flex-shrink-0" />
+                                      <div>
+                                        <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
+                                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                          <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
+                                            <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
+                                          </span>
+                                          <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-muted'}`}>
+                                            {sa.activity.category}
+                                          </span>
+                                          {sa.scheduledTime && (
+                                            <span className="font-mono text-[10px] text-[#16302B]/50">{formatTime(sa.scheduledTime)}</span>
+                                          )}
+                                          {sa.notes && <span className="font-mono text-[10px] italic text-[#16302B]/45">{sa.notes}</span>}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 flex-shrink-0">
+                                      <span className="font-mono text-xs font-semibold text-[#16302B]">
+                                        ${Number(sa.costOverride ?? sa.activity.cost)}
+                                      </span>
+                                      <button onClick={() => startEdit(sa)} className="text-[#16302B]/35 hover:text-[#16302B]"><Pencil className="size-3.5" /></button>
+                                      <button onClick={() => handleDelete(sa.id)} className="text-[#16302B]/35 hover:text-[#E15B4F]"><Trash2 className="size-3.5" /></button>
+                                    </div>
+                                  </div>
+                                )}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+
+                      {/* Day total footer */}
+                      {dayActivities.length > 0 && (
+                        <div className="flex justify-between border-t border-dashed border-[#16302B]/12 bg-[#FBF6ED]/30 px-6 py-2.5 font-mono text-[11px] text-[#16302B]/60">
+                          <span>Day {day} Subtotal</span>
+                          <span className="font-bold text-[#16302B]">
+                            ${dayActivities.reduce((s, sa) => s + Number(sa.costOverride ?? sa.activity.cost), 0).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               );

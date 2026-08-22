@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Search, Send, Trash2 } from 'lucide-react';
-import request from '../api/client';
+import { useEffect, useRef, useState } from 'react';
+import { Image, Loader2, Search, Send, Trash2, X } from 'lucide-react';
+import request, { uploadPhoto } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import PageHeader from '../components/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 
 export default function Community() {
   const { token, user } = useAuth();
@@ -15,6 +16,8 @@ export default function Community() {
   const [search, setSearch] = useState('');
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
 
   function load() {
     const params = search ? `?search=${encodeURIComponent(search)}` : '';
@@ -22,6 +25,20 @@ export default function Community() {
   }
 
   useEffect(load, [search]);
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      setImageUrl(await uploadPhoto(file, token));
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handlePost(e) {
     e.preventDefault();
@@ -45,8 +62,22 @@ export default function Community() {
         <CardContent>
           <form className="flex flex-col gap-3" onSubmit={handlePost}>
             <Textarea placeholder="Share something about a trip or activity..." value={content} onChange={(e) => setContent(e.target.value)} />
-            <Input placeholder="Image URL (optional)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-            <Button type="submit" className="self-end"><Send className="size-4" /> Post</Button>
+            {imageUrl && (
+              <div className="relative w-fit">
+                <img src={imageUrl} alt="" className="max-h-40 rounded-lg object-cover" />
+                <button type="button" onClick={() => setImageUrl('')} className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-foreground text-background">
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileRef.current?.click()}>
+                {uploading ? <Loader2 className="size-4 animate-spin" /> : <Image className="size-4" />}
+                {uploading ? 'Uploading...' : 'Add photo'}
+              </Button>
+              <Button type="submit"><Send className="size-4" /> Post</Button>
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
           </form>
         </CardContent>
       </Card>

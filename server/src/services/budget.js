@@ -51,6 +51,14 @@ function computeBudget(trip) {
 
   const total = transport + stay + meals + activities;
   const totalBudget = trip.totalBudget != null ? Number(trip.totalBudget) : null;
+  const dailyBudget = totalBudget != null && totalDays ? totalBudget / totalDays : null;
+
+  if (dailyBudget != null) {
+    for (const stop of perStop) {
+      stop.perDay = round2(stop.total / stop.days);
+      stop.overBudgetDay = stop.perDay > dailyBudget;
+    }
+  }
 
   return {
     breakdown: { transport: round2(transport), stay: round2(stay), meals: round2(meals), activities: round2(activities) },
@@ -58,7 +66,9 @@ function computeBudget(trip) {
     totalDays,
     averagePerDay: totalDays ? round2(total / totalDays) : 0,
     totalBudget,
+    dailyBudget: dailyBudget != null ? round2(dailyBudget) : null,
     overBudget: totalBudget != null ? total > totalBudget : false,
+    overBudgetDays: dailyBudget != null ? perStop.filter((s) => s.overBudgetDay).reduce((sum, s) => sum + s.days, 0) : 0,
     perStop,
   };
 }

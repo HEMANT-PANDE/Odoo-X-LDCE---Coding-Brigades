@@ -1,10 +1,19 @@
-import { useState } from 'react';
-import { Globe, Target } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Globe, Target, Users } from 'lucide-react';
 import CityPicker from '../components/CityPicker';
 import ActivityPicker from '../components/ActivityPicker';
+import TripCard from '../components/TripCard';
+import request from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export default function Search() {
   const [tab, setTab] = useState('cities');
+  const { token } = useAuth();
+  const [publicTrips, setPublicTrips] = useState([]);
+
+  useEffect(() => {
+    if (tab === 'trips') request('/trips/public', { token }).then(setPublicTrips);
+  }, [tab, token]);
 
   return (
     <main className="relative min-h-svh overflow-x-clip bg-[#FBF6ED] text-[#16302B]">
@@ -53,11 +62,30 @@ export default function Search() {
           >
             <Target className="size-3.5" /> Experiences & Activities
           </button>
+          <button
+            onClick={() => setTab('trips')}
+            className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+              tab === 'trips'
+                ? 'bg-[#16302B] text-[#FBF6ED] shadow-sm'
+                : 'border border-[#16302B]/20 bg-white/60 text-[#16302B]/70 hover:bg-white'
+            }`}
+          >
+            <Users className="size-3.5" /> Public Trips
+          </button>
         </div>
 
         {/* Card Content */}
         <div className="rounded-sm border border-[#16302B]/15 bg-white p-6 shadow-[0_4px_16px_rgba(22,48,43,0.04)]">
-          {tab === 'cities' ? <CityPicker /> : <ActivityPicker />}
+          {tab === 'cities' && <CityPicker />}
+          {tab === 'activities' && <ActivityPicker />}
+          {tab === 'trips' && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {publicTrips.map((t) => <TripCard key={t.id} trip={t} readOnly />)}
+              {publicTrips.length === 0 && (
+                <p className="col-span-full py-6 text-center text-sm text-[#16302B]/50">No public trips yet.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>

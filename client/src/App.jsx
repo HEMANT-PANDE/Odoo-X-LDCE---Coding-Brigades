@@ -15,6 +15,7 @@ import CreateTrip from './pages/CreateTrip';
 import MyTrips from './pages/MyTrips';
 import ItineraryBuilder from './pages/ItineraryBuilder';
 import ItineraryView from './pages/ItineraryView';
+import PublicItinerary from './pages/PublicItinerary';
 import Budget from './pages/Budget';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
@@ -38,6 +39,7 @@ function AppShell() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/public/trips/:tripId" element={<PublicItinerary />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
           <Route path="/trips/new" element={<ProtectedRoute><CreateTrip /></ProtectedRoute>} />
