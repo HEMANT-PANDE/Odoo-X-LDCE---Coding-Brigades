@@ -266,7 +266,7 @@ export default function ItineraryBuilder() {
                       {stop.activities.map((sa) => (
                         <li key={sa.id} className="flex items-center justify-between py-2.5">
                           <div className="flex items-center gap-3">
-                            <span className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase border font-semibold ${CATEGORY_COLORS[sa.activity.category] || 'bg-gray-100'}`}>
+                            <span className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase border font-semibold ${CATEGORY_COLORS[sa.activity.category] || 'bg-muted'}`}>
                               {sa.activity.category}
                             </span>
                             <div>

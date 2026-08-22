@@ -131,7 +131,7 @@ export default function ActivityPicker({ cityId, onSelect }) {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-serif font-semibold text-sm text-[#16302B]">{a.name}</p>
-                    <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[a.category] || 'bg-gray-100'}`}>
+                    <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[a.category] || 'bg-muted'}`}>
                       {a.category}
                     </span>
                   </div>

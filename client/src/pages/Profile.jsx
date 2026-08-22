@@ -11,6 +11,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+<<<<<<< Updated upstream
+=======
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+>>>>>>> Stashed changes
 
 export default function Profile() {
   const { user, token, login, logout } = useAuth();
@@ -53,7 +57,14 @@ export default function Profile() {
       <Card className="mb-8">
         <CardHeader>
           <div className="flex items-center gap-4">
+<<<<<<< Updated upstream
             <AvatarUpload token={token} initials={initials || 'U'} value={form.photoUrl} onUploaded={handlePhotoUploaded} />
+=======
+            <Avatar size="lg">
+              {form.photoUrl && <AvatarImage src={form.photoUrl} alt={`${form.firstName} ${form.lastName}`} />}
+              <AvatarFallback className="bg-primary text-lg text-primary-foreground">{initials || 'U'}</AvatarFallback>
+            </Avatar>
+>>>>>>> Stashed changes
             <CardTitle>{form.firstName} {form.lastName}</CardTitle>
           </div>
         </CardHeader>
@@ -65,6 +76,7 @@ export default function Profile() {
             </div>
             <div className="grid gap-1.5"><Label>Email</Label><Input value={form.email} disabled /></div>
             <div className="grid gap-1.5"><Label>Phone</Label><Input value={form.phone || ''} onChange={set('phone')} /></div>
+            <div className="grid gap-1.5"><Label>Photo URL</Label><Input placeholder="https://..." value={form.photoUrl || ''} onChange={set('photoUrl')} /></div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-1.5"><Label>City</Label><Input value={form.city || ''} onChange={set('city')} /></div>
               <div className="grid gap-1.5"><Label>Country</Label><Input value={form.country || ''} onChange={set('country')} /></div>

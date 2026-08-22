@@ -1,6 +1,11 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe2, LayoutDashboard, Luggage, Search, CalendarDays, Users, ShieldCheck, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+<<<<<<< Updated upstream
+=======
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+>>>>>>> Stashed changes
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -65,10 +70,20 @@ export default function Navbar() {
             </nav>
 
             <DropdownMenu>
+<<<<<<< Updated upstream
               <DropdownMenuTrigger render={<Button variant="ghost" className="rounded-full p-0.5" />}>
                 <Avatar>
                   {user.photoUrl ? <AvatarImage src={user.photoUrl} /> : <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>}
                 </Avatar>
+=======
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="rounded-full p-0.5">
+                  <Avatar>
+                    {user.photoUrl && <AvatarImage src={user.photoUrl} alt={initials} />}
+                    <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
+                  </Avatar>
+                </Button>
+>>>>>>> Stashed changes
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem render={<Link to="/profile" />}>Profile</DropdownMenuItem>

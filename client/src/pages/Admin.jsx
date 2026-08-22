@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Trash2, Users, Luggage, MessageSquare } from 'lucide-react';
+import { Trash2, Users, Luggage, MessageSquare, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 export default function Admin() {
   const { token } = useAuth();
   const [users, setUsers] = useState([]);
+  const [userSearch, setUserSearch] = useState('');
   const [cities, setCities] = useState([]);
   const [activities, setActivities] = useState([]);
   const [trends, setTrends] = useState(null);
@@ -46,6 +47,15 @@ export default function Admin() {
         </TabsList>
 
         <TabsContent value="users">
+          <div className="relative mb-4 max-w-sm">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              placeholder="Search users by name or email..."
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+              className="w-full rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
           <Card>
             <CardContent className="px-0">
               <Table>
@@ -53,7 +63,12 @@ export default function Admin() {
                   <TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Trips</TableHead><TableHead>Joined</TableHead><TableHead /></TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((u) => (
+                  {users
+                    .filter((u) => {
+                      const q = userSearch.toLowerCase();
+                      return `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+                    })
+                    .map((u) => (
                     <TableRow key={u.id}>
                       <TableCell className="font-medium">{u.firstName} {u.lastName} {u.isAdmin && <Badge variant="secondary" className="ml-1">admin</Badge>}</TableCell>
                       <TableCell className="text-muted-foreground">{u.email}</TableCell>
