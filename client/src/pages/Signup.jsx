@@ -59,7 +59,6 @@ export default function Signup() {
         </CardHeader>
         <CardContent className="px-8 pt-4">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-<<<<<<< Updated upstream
             {error && (
               <p className="rounded-md bg-destructive/15 px-3 py-2 text-sm text-destructive">
                 {error}
@@ -68,36 +67,6 @@ export default function Signup() {
 
             <div className="flex justify-center">
               <AvatarUpload initials={`${form.firstName[0] ?? ''}${form.lastName[0] ?? ''}`.toUpperCase() || 'U'} onFileSelected={setPhotoFile} />
-=======
-            {error && <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
-            <div className="flex items-center gap-4">
-              <Avatar size="lg">
-                {form.photoUrl && <AvatarImage src={form.photoUrl} alt="Profile preview" />}
-                <AvatarFallback>{`${form.firstName?.[0] ?? ''}${form.lastName?.[0] ?? ''}`.toUpperCase() || 'U'}</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 gap-1.5">
-                <Label htmlFor="photoUrl">Photo URL (optional)</Label>
-                <Input id="photoUrl" placeholder="https://..." value={form.photoUrl} onChange={set('photoUrl')} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-1.5">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" value={form.firstName} onChange={set('firstName')} required />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" value={form.lastName} onChange={set('lastName')} required />
-              </div>
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="signupEmail">Email Address</Label>
-              <Input id="signupEmail" type="email" value={form.email} onChange={set('email')} required />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" value={form.phone} onChange={set('phone')} />
->>>>>>> Stashed changes
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">

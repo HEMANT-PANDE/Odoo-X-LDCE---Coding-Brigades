@@ -63,12 +63,7 @@ export default function Community() {
             <Card key={p.id}>
               <CardContent className="flex gap-3">
                 <Avatar>
-<<<<<<< Updated upstream
                   {p.user.photoUrl ? <AvatarImage src={p.user.photoUrl} /> : <AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback>}
-=======
-                  {p.user.photoUrl && <AvatarImage src={p.user.photoUrl} alt={initials} />}
-                  <AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback>
->>>>>>> Stashed changes
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
