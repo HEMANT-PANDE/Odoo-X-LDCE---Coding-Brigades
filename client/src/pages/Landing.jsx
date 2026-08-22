@@ -184,8 +184,8 @@ export default function Landing() {
           </h1>
 
           <p className="mt-5 max-w-xl text-base text-[#16302B]/70 sm:text-lg">
-            GlobeTrotter turns a list of cities into a real itinerary — routed, timed, and
-            budgeted — so the planning takes an evening, not a spreadsheet.
+            GlobeTrotter turns a list of cities into a real itinerary - routed, timed, and
+            budgeted - so the planning takes an evening, not a spreadsheet.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -235,7 +235,7 @@ export default function Landing() {
           {FEATURES.map(({ icon: Icon, title, text, code }) => (
             <Card
               key={title}
-              className="group relative overflow-visible border border-[#16302B]/12 bg-[#FBF6ED] shadow-none transition-transform duration-300 hover:-translate-y-1"
+              className="group relative overflow-visible border border-[#16302B]/12 bg-white shadow-none transition-transform duration-300 hover:-translate-y-1"
             >
               {/* boarding-pass notches */}
               <span className="pointer-events-none absolute -left-2.5 top-1/2 size-5 -translate-y-1/2 rounded-full bg-[#FBF6ED]" style={{ boxShadow: 'inset 0 0 0 1px rgba(22,48,43,0.12)' }} />
