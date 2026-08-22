@@ -1,5 +1,6 @@
-// Seed the catalog tables (cities, activities) with demo data.
+// Seed the catalog tables (cities, activities) with demo data, plus one admin account.
 // Run: npm run prisma:seed
+const bcrypt = require('bcrypt');
 const { PrismaClient } = require('../src/generated/prisma');
 const prisma = new PrismaClient();
 
@@ -58,6 +59,18 @@ async function main() {
     });
   }
   console.log(`Seeded ${CITIES.length} cities with ${CITIES.length * CATEGORY_TEMPLATES.length} activities.`);
+
+  const adminEmail = 'admin@globetrotter.dev';
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {},
+    create: {
+      firstName: 'Admin', lastName: 'User', email: adminEmail,
+      passwordHash: await bcrypt.hash('admin123', 10),
+      isAdmin: true,
+    },
+  });
+  console.log(`Seeded admin account: ${adminEmail} / admin123`);
 }
 
 main()
