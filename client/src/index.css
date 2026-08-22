@@ -4,39 +4,39 @@
 @import "shadcn/tailwind.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #1f2430;
+  --background: #f5f5f5;
+  --foreground: #303841;
   --card: #ffffff;
-  --card-foreground: #1f2430;
+  --card-foreground: #303841;
   --popover: #ffffff;
-  --popover-foreground: #1f2430;
+  --popover-foreground: #303841;
 
-  --primary: #525ea7;
+  --primary: #76abae;
   --primary-foreground: #ffffff;
-  --secondary: #eaf6fa;
-  --secondary-foreground: #525ea7;
-  --muted: #f3f4f8;
+  --secondary: #d8e9ea;
+  --secondary-foreground: #303841;
+  --muted: #eceff1;
   --muted-foreground: #6b7280;
-  --accent: #ffc349;
-  --accent-foreground: #3a2c05;
+  --accent: #ff5722;
+  --accent-foreground: #ffffff;
   --destructive: #d64545;
   --destructive-foreground: #ffffff;
 
   --border: #e4e6ed;
   --input: #e4e6ed;
-  --ring: #525ea7;
+  --ring: #76abae;
 
-  --chart-1: #ffc349;
-  --chart-2: #525ea7;
-  --chart-3: #5facd3;
-  --chart-4: #97dde9;
-  --chart-5: #8f4fd6;
+  --chart-1: #76abae;
+  --chart-2: #303841;
+  --chart-3: #ff5722;
+  --chart-4: #5f7a7c;
+  --chart-5: #4e575f;
 
   --radius: 0.75rem;
 
   /* Legacy CSS vars for existing pages */
-  --text: #2b2b33;
-  --bg: #f7f7fb;
+  --text: #303841;
+  --bg: #f5f5f5;
   --card-bg: #fff;
   --accent-text: #fff;
   --error: #d64545;

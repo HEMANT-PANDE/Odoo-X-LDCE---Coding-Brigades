@@ -24,7 +24,7 @@ export default function Login() {
     try {
       const { token, user } = await request('/auth/login', { method: 'POST', body: { email, password } });
       login(token, user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

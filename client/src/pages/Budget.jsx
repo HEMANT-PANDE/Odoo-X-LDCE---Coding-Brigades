@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
-const PIE_COLORS = ['#525EA7', '#FFC349', '#5FACD3', '#97DDE9'];
+const PIE_COLORS = ['#76ABAE', '#303841', '#FF5722', '#5F7A7C'];
 
 const RADIAN = Math.PI / 180;
 function CustomLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
@@ -180,10 +180,10 @@ export default function Budget() {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip formatter={(v) => [`$${v}`, '']} />
                 <Legend formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>} />
-                <Bar dataKey="Transport" stackId="a" fill="#525EA7" />
-                <Bar dataKey="Stay" stackId="a" fill="#FFC349" />
-                <Bar dataKey="Meals" stackId="a" fill="#5FACD3" />
-                <Bar dataKey="Activities" stackId="a" fill="#97DDE9" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Transport" stackId="a" fill="#76ABAE" />
+                <Bar dataKey="Stay" stackId="a" fill="#303841" />
+                <Bar dataKey="Meals" stackId="a" fill="#FF5722" />
+                <Bar dataKey="Activities" stackId="a" fill="#5F7A7C" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

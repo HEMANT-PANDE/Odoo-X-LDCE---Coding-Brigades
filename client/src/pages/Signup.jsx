@@ -30,7 +30,7 @@ export default function Signup() {
     try {
       const { token, user } = await request('/auth/signup', { method: 'POST', body: form });
       login(token, user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

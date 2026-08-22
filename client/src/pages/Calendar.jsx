@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const TRIP_COLORS = ['bg-primary', 'bg-[#5facd3]', 'bg-[#ffc349] text-[#3a2c05]', 'bg-[#8f4fd6]'];
+const TRIP_COLORS = ['bg-primary', 'bg-[#303841]', 'bg-[#FF5722]', 'bg-[#5F7A7C]'];
 
 function buildGrid(year, month) {
   const first = new Date(year, month, 1);

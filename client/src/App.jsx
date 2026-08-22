@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import CreateTrip from './pages/CreateTrip';
 import MyTrips from './pages/MyTrips';
@@ -26,10 +27,11 @@ export default function App() {
         <Toaster position="top-right" richColors />
         <Navbar />
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
           <Route path="/trips/new" element={<ProtectedRoute><CreateTrip /></ProtectedRoute>} />
           <Route path="/trips/:tripId/builder" element={<ProtectedRoute><ItineraryBuilder /></ProtectedRoute>} />

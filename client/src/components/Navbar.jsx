@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { cn } from '@/lib/utils';
 
 const LINKS = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/trips', label: 'My Trips', icon: Luggage },
   { to: '/search', label: 'Search', icon: Search },
   { to: '/calendar', label: 'Calendar', icon: CalendarDays },
@@ -25,9 +25,14 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
-          <Globe2 className="size-6" strokeWidth={2.2} />
-          <span className="text-lg tracking-tight">GlobeTrotter</span>
+        <Link to="/dashboard" className="flex items-center gap-2 text-foreground">
+          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
+            <Globe2 className="size-5" />
+          </span>
+          <div>
+            <p className="text-base font-semibold leading-none tracking-tight">GlobeTrotter</p>
+            <p className="text-xs text-muted-foreground">Empowering Personalized Travel Planning</p>
+          </div>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">

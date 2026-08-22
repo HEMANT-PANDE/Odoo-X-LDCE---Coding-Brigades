@@ -110,7 +110,7 @@ export default function Admin() {
                       <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                       <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                       <Tooltip />
-                      <Line type="monotone" dataKey="count" stroke="#525ea7" strokeWidth={2} />
+                      <Line type="monotone" dataKey="count" stroke="#76ABAE" strokeWidth={2} />
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
