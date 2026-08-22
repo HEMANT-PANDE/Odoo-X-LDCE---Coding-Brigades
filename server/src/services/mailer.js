@@ -5,10 +5,8 @@ let transporter = null;
 function getTransporter() {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      host: config.smtp.host,
-      port: config.smtp.port,
-      secure: config.smtp.port === 465,
-      auth: { user: config.smtp.user, pass: config.smtp.pass },
+      service: 'gmail',
+      auth: { user: config.email.user, pass: config.email.pass },
     });
   }
   return transporter;
@@ -16,7 +14,7 @@ function getTransporter() {
 
 async function sendPasswordResetEmail(to, resetUrl) {
   await getTransporter().sendMail({
-    from: config.smtp.from,
+    from: config.email.user,
     to,
     subject: 'Reset your GlobeTrotter password',
     text: `Reset your password: ${resetUrl}\n\nThis link expires in 1 hour. If you didn't request this, ignore this email.`,

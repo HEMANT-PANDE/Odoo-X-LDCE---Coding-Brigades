@@ -11,12 +11,9 @@ module.exports = {
   openTripMapKey: process.env.OPENTRIPMAP_API_KEY || '',
   // 'static' = DB catalog only, 'dynamic' = live API only, 'hybrid' = DB + live top-up when DB is thin.
   activitySource: process.env.ACTIVITY_SOURCE || 'hybrid',
-  smtp: {
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+  email: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
 };

@@ -66,6 +66,7 @@ async function main() {
         category,
         cost: Math.round(costIndex * costFactor * 100) / 100,
         durationHours,
+        imageUrl, // no per-activity photos in this dataset — the city photo is a reasonable stand-in
       })),
     });
   }
@@ -78,7 +79,7 @@ async function main() {
     create: {
       firstName: 'Super',
       lastName: 'Admin',
-      email: superAdminEmail,
+      email: adminEmail,
       passwordHash: await bcrypt.hash('admin123', 10),
       role: 'SUPER_ADMIN',
       isAdmin: true,
