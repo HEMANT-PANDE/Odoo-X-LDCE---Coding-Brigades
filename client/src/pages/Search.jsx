@@ -40,7 +40,7 @@ export default function Search() {
                 : 'border border-[#16302B]/20 bg-white/60 text-[#16302B]/70 hover:bg-white'
             }`}
           >
-            🌍 Destination Cities
+            Destination Cities
           </button>
           <button
             onClick={() => setTab('activities')}
@@ -50,7 +50,7 @@ export default function Search() {
                 : 'border border-[#16302B]/20 bg-white/60 text-[#16302B]/70 hover:bg-white'
             }`}
           >
-            🎯 Experiences & Activities
+            Experiences & Activities
           </button>
         </div>
 

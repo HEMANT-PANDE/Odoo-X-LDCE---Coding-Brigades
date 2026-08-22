@@ -21,6 +21,7 @@ import Profile from './pages/Profile';
 import Community from './pages/Community';
 import Calendar from './pages/Calendar';
 import Admin from './pages/Admin';
+import Agency from './pages/Agency';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 
@@ -48,6 +49,7 @@ function AppShell() {
           <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          <Route path="/agency" element={<AdminRoute><Agency /></AdminRoute>} />
         </Routes>
       </ErrorBoundary>
       <Footer />

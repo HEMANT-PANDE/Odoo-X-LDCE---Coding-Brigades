@@ -13,7 +13,8 @@ function toPublicUser(u) {
 }
 
 function sign(user) {
-  return jwt.sign({ id: user.id, isAdmin: user.isAdmin }, config.jwtSecret, { expiresIn: '7d' });
+  const role = user.role || (user.isAdmin ? 'SUPER_ADMIN' : 'TRAVELER');
+  return jwt.sign({ id: user.id, isAdmin: user.isAdmin, role }, config.jwtSecret, { expiresIn: '7d' });
 }
 
 router.post('/signup', async (req, res) => {

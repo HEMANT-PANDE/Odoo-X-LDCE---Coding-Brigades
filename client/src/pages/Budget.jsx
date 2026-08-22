@@ -4,7 +4,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye } from 'lucide-react';
+import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye, Plane, Building, Utensils, Ticket } from 'lucide-react';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,10 +24,10 @@ function CustomLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
 }
 
 const BREAKDOWN_ICONS = {
-  transport: '✈️',
-  stay: '🏨',
-  meals: '🍽️',
-  activities: '🎯',
+  transport: Plane,
+  stay: Building,
+  meals: Utensils,
+  activities: Ticket,
 };
 
 export default function Budget() {
@@ -93,7 +93,7 @@ export default function Budget() {
                 Trip Budget Breakdown
               </h1>
               <p className="mt-1 font-mono text-xs text-[#16302B]/65">
-                Expense estimates across transit, lodging, meals & booked activities.
+                Expense estimates across transit, lodging, meals &amp; booked activities.
               </p>
             </div>
 
@@ -150,13 +150,18 @@ export default function Budget() {
 
         {/* Breakdown Category Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {Object.entries(budget.breakdown).map(([key, val]) => (
-            <div key={key} className="rounded-xl border border-[#16302B]/12 bg-white p-5 text-center shadow-none">
-              <div className="text-2xl mb-1">{BREAKDOWN_ICONS[key]}</div>
-              <p className="font-serif text-xl font-bold text-[#16302B]">${val}</p>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-[#16302B]/50 capitalize mt-0.5">{key}</p>
-            </div>
-          ))}
+          {Object.entries(budget.breakdown).map(([key, val]) => {
+            const IconComp = BREAKDOWN_ICONS[key] || Ticket;
+            return (
+              <div key={key} className="rounded-xl border border-[#16302B]/12 bg-white p-5 text-center shadow-none flex flex-col items-center justify-center">
+                <span className="flex size-10 items-center justify-center rounded-lg bg-[#16302B]/5 text-[#16302B] mb-2">
+                  <IconComp className="size-5 text-[#16302B]" />
+                </span>
+                <p className="font-serif text-xl font-bold text-[#16302B]">${val}</p>
+                <p className="font-mono text-[10px] uppercase tracking-wider text-[#16302B]/50 capitalize mt-0.5">{key}</p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Charts */}

@@ -19,6 +19,7 @@ model User {
   bio          String?
   photoUrl     String?        @map("photo_url")
   passwordHash String         @map("password_hash")
+  role         String         @default("TRAVELER") // 'SUPER_ADMIN' | 'AGENCY_ADMIN' | 'TRAVELER'
   isAdmin      Boolean        @default(false) @map("is_admin")
   createdAt    DateTime       @default(now()) @map("created_at")
   trips        Trip[]

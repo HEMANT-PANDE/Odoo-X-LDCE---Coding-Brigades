@@ -159,7 +159,9 @@ export default function ItineraryView() {
                     .map((sa) => (
                       <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-[#FBF6ED]/40 transition-colors">
                         <div className="flex items-center gap-3">
-                          <span className="text-lg">{CATEGORY_ICONS[sa.activity.category] || '📌'}</span>
+                          <span className="flex size-7 items-center justify-center rounded bg-[#FBF6ED] border border-[#16302B]/15 text-[#16302B]">
+                            <Ticket className="size-3.5" />
+                          </span>
                           <div>
                             <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
                             <div className="flex items-center gap-2 mt-0.5">

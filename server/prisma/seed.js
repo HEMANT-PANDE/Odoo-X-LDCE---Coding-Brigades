@@ -66,17 +66,69 @@ async function main() {
   }
   console.log(`Seeded ${CITIES.length} cities with ${CITIES.length * CATEGORY_TEMPLATES.length} activities.`);
 
-  const adminEmail = 'admin@globetrotter.dev';
+  // 1. Super Admin Account
+  const superAdminEmail = 'superadmin@globetrotter.dev';
   await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {},
+    where: { email: superAdminEmail },
+    update: { role: 'SUPER_ADMIN', isAdmin: true },
     create: {
-      firstName: 'Admin', lastName: 'User', email: adminEmail,
+      firstName: 'Super',
+      lastName: 'Admin',
+      email: superAdminEmail,
       passwordHash: await bcrypt.hash('admin123', 10),
+      role: 'SUPER_ADMIN',
       isAdmin: true,
     },
   });
-  console.log(`Seeded admin account: ${adminEmail} / admin123`);
+
+  // Legacy fallback admin@globetrotter.dev -> Super Admin as well
+  await prisma.user.upsert({
+    where: { email: 'admin@globetrotter.dev' },
+    update: { role: 'SUPER_ADMIN', isAdmin: true },
+    create: {
+      firstName: 'System',
+      lastName: 'Admin',
+      email: 'admin@globetrotter.dev',
+      passwordHash: await bcrypt.hash('admin123', 10),
+      role: 'SUPER_ADMIN',
+      isAdmin: true,
+    },
+  });
+
+  // 2. Agency Admin Account
+  const agencyEmail = 'agency@globetrotter.dev';
+  await prisma.user.upsert({
+    where: { email: agencyEmail },
+    update: { role: 'AGENCY_ADMIN', isAdmin: true },
+    create: {
+      firstName: 'Agency',
+      lastName: 'Planner',
+      email: agencyEmail,
+      passwordHash: await bcrypt.hash('agency123', 10),
+      role: 'AGENCY_ADMIN',
+      isAdmin: true,
+    },
+  });
+
+  // 3. Demo Traveler Account
+  const travelerEmail = 'traveler@globetrotter.dev';
+  await prisma.user.upsert({
+    where: { email: travelerEmail },
+    update: { role: 'TRAVELER', isAdmin: false },
+    create: {
+      firstName: 'Alex',
+      lastName: 'Traveler',
+      email: travelerEmail,
+      passwordHash: await bcrypt.hash('traveler123', 10),
+      role: 'TRAVELER',
+      isAdmin: false,
+    },
+  });
+
+  console.log(`Seeded Role Hierarchy Accounts:
+  - Super Admin: ${superAdminEmail} / admin123
+  - Agency Admin: ${agencyEmail} / agency123
+  - Traveler: ${travelerEmail} / traveler123`);
 }
 
 main()

@@ -6,7 +6,7 @@ export default function AuthLayout({
   eyebrow = 'GlobeTrotter',
   headline = ['Explore', 'Horizons'],
   tagline = 'Where your dream destinations become reality.',
-  imageSrc = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop',
+  imageSrc = 'https://template.canva.com/EAGZoNQnE0c/1/0/1600w-hMbaKRTCH8w.jpg',
 }) {
   const [imgFailed, setImgFailed] = useState(false);
 
