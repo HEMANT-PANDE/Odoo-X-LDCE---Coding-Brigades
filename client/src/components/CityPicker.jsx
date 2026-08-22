@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Search, Plus, MapPin, TrendingUp } from 'lucide-react';
+import { Search as SearchIcon, Plus, MapPin, TrendingUp } from 'lucide-react';
 import request from '../api/client';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 const REGIONS = ['Europe', 'Asia', 'Americas', 'Africa', 'Oceania', 'Middle East'];
 
-/** Polished city list with search/filter — used in ItineraryBuilder (picker) and Search page (browse). */
 export default function CityPicker({ onSelect }) {
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
@@ -29,31 +26,31 @@ export default function CityPicker({ onSelect }) {
   }, [search, country, region, sort]);
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2.5">
         <div className="relative flex-1 min-w-[140px]">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-[#16302B]/40" />
+          <input
             id="city-search"
-            placeholder="Search cities..."
+            placeholder="Search destination cities..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
+            className="w-full rounded border border-[#16302B]/20 bg-white pl-9 pr-3 py-2 text-xs text-[#16302B] outline-none focus:border-[#16302B]"
           />
         </div>
-        <Input
+        <input
           id="city-country"
           placeholder="Filter country"
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          className="flex-1 min-w-[120px]"
+          className="flex-1 min-w-[110px] rounded border border-[#16302B]/20 bg-white px-3 py-2 text-xs text-[#16302B] outline-none focus:border-[#16302B]"
         />
         <select
           id="city-region"
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+          className="rounded border border-[#16302B]/20 bg-white px-3 py-2 text-xs text-[#16302B] outline-none focus:border-[#16302B]"
         >
           <option value="">All Regions</option>
           {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
@@ -62,55 +59,55 @@ export default function CityPicker({ onSelect }) {
           id="city-sort"
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+          className="rounded border border-[#16302B]/20 bg-white px-3 py-2 text-xs text-[#16302B] outline-none focus:border-[#16302B]"
         >
-          <option value="">Sort: Default</option>
-          <option value="popularity">Sort: Popularity</option>
-          <option value="cost_asc">Sort: Cost ↑</option>
-          <option value="cost_desc">Sort: Cost ↓</option>
+          <option value="">Sort: Popularity</option>
+          <option value="cost_asc">Cost: Low to High</option>
+          <option value="cost_desc">Cost: High to Low</option>
         </select>
       </div>
 
       {/* City list */}
       {loading ? (
-        <div className="flex items-center justify-center py-10">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center py-8">
+          <p className="font-mono text-xs text-[#16302B]/50 uppercase tracking-wider">Searching destinations...</p>
         </div>
       ) : cities.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-4xl mb-2">🌍</p>
-          <p className="text-muted-foreground text-sm">No cities found. Try different filters.</p>
+          <p className="font-serif text-sm text-[#16302B]/60">No destinations found matching your criteria.</p>
         </div>
       ) : (
-        <ul className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+        <ul className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
           {cities.map((c) => (
             <li
               key={c.id}
-              className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-all group"
+              className="flex items-center justify-between gap-3 p-3 rounded-sm border border-[#16302B]/12 bg-white hover:border-[#16302B]/30 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="size-9 rounded-full bg-[#16302B] text-[#F2A93B] flex items-center justify-center text-sm flex-shrink-0">
                   <MapPin className="size-4" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">{c.name}, {c.country}</p>
-                  <p className="text-xs text-muted-foreground">{c.region ? `${c.region} · ` : ''}Cost index ${c.costIndex}</p>
+                  <p className="font-serif font-semibold text-sm text-[#16302B]">{c.name}, {c.country}</p>
+                  <p className="font-mono text-[10px] text-[#16302B]/50">
+                    {c.region ? `${c.region} · ` : ''}Cost Index ${c.costIndex}/day
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {c.popularity && (
-                  <span className="bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                    <TrendingUp className="size-3" /> {c.popularity}
+                  <span className="rounded border border-[#16302B]/15 bg-[#FBF6ED] px-2 py-0.5 font-mono text-[10px] text-[#16302B]/60 flex items-center gap-1">
+                    <TrendingUp className="size-2.5 text-[#F2A93B]" /> {c.popularity}
                   </span>
                 )}
                 {onSelect && (
-                  <Button
-                    size="sm"
+                  <button
                     id={`city-select-${c.id}`}
                     onClick={() => onSelect(c)}
+                    className="inline-flex items-center gap-1 rounded bg-[#16302B] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-[#FBF6ED] hover:bg-[#E15B4F] transition-colors"
                   >
-                    <Plus className="size-4 mr-1" /> Add
-                  </Button>
+                    <Plus className="size-3" /> Select
+                  </button>
                 )}
               </div>
             </li>

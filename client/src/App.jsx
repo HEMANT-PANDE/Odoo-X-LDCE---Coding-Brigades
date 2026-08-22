@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { Toaster } from '@/components/ui/sonner';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -19,33 +20,44 @@ import Profile from './pages/Profile';
 import Community from './pages/Community';
 import Calendar from './pages/Calendar';
 import Admin from './pages/Admin';
-import Footer from './components/Footer';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
+function AppShell() {
+  return (
+    <>
+      <Toaster position="top-right" richColors />
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
+        <Route path="/trips/new" element={<ProtectedRoute><CreateTrip /></ProtectedRoute>} />
+        <Route path="/trips/:tripId/builder" element={<ProtectedRoute><ItineraryBuilder /></ProtectedRoute>} />
+        <Route path="/trips/:tripId" element={<ProtectedRoute><ItineraryView /></ProtectedRoute>} />
+        <Route path="/trips/:tripId/budget" element={<ProtectedRoute><Budget /></ProtectedRoute>} />
+        <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+      </Routes>
+      <Footer />
+    </>
+  );
+}
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster position="top-right" richColors />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/trips" element={<ProtectedRoute><MyTrips /></ProtectedRoute>} />
-          <Route path="/trips/new" element={<ProtectedRoute><CreateTrip /></ProtectedRoute>} />
-          <Route path="/trips/:tripId/builder" element={<ProtectedRoute><ItineraryBuilder /></ProtectedRoute>} />
-          <Route path="/trips/:tripId" element={<ProtectedRoute><ItineraryView /></ProtectedRoute>} />
-          <Route path="/trips/:tripId/budget" element={<ProtectedRoute><Budget /></ProtectedRoute>} />
-          <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
-          <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        </Routes>
-        <Footer />
+        <AppShell />
       </BrowserRouter>
     </AuthProvider>
   );
 }
+

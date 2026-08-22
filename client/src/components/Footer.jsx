@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-
 export default function Footer() {
     return (
         <footer className="relative overflow-hidden bg-accent text-accent-foreground border-t border-dashed border-accent-foreground/25 mt-auto">
@@ -9,8 +8,8 @@ export default function Footer() {
                         © {new Date().getFullYear()} GlobeTrotter. All rights reserved.
                     </p>
                     <div className="flex items-center gap-5 font-mono text-xs text-accent-foreground/80">
-                        <Link to="#" className="hover:text-accent-foreground">Privacy</Link>
-                        <Link to="#" className="hover:text-accent-foreground">Terms</Link>
+                        <Link to="/privacy" className="hover:text-accent-foreground">Privacy</Link>
+                        <Link to="/terms" className="hover:text-accent-foreground">Terms</Link>
                         <Link to="/dashboard" className="inline-flex items-center gap-1 text-foreground bg-accent-foreground px-3 py-1.5 rounded-full hover:bg-accent-foreground/90 transition-colors">
                             Dashboard
                         </Link>

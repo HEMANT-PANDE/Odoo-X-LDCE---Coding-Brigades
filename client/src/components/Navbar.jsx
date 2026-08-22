@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe2, LayoutDashboard, Luggage, Search, CalendarDays, Users, ShieldCheck, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
@@ -21,17 +21,15 @@ export default function Navbar() {
   const initials = user ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() : '';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-dashed border-foreground/25 bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
-        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 text-foreground">
-          <span className="inline-flex size-9 items-center justify-center rounded-full bg-foreground text-background shadow-sm">
-            <Globe2 className="size-4.5" />
+        <Link to="/dashboard" className="flex items-center gap-2 text-foreground">
+          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
+            <Globe2 className="size-5" />
           </span>
-          <div className="leading-tight">
-            <p className="font-serif text-base font-semibold tracking-tight">GlobeTrotter</p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/55">
-              Travel Planning
-            </p>
+          <div>
+            <p className="font-serif text-base font-semibold leading-none tracking-tight">GlobeTrotter</p>
+            <p className="text-xs text-muted-foreground mt-1">Empowering Personalized Travel Planning</p>
           </div>
         </Link>
 
@@ -67,16 +65,18 @@ export default function Navbar() {
             </nav>
 
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="ghost" className="rounded-full p-0.5" />}>
-                <Avatar>
-                  <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
-                </Avatar>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="rounded-full p-0.5">
+                  <Avatar>
+                    <AvatarFallback className="bg-primary text-primary-foreground">{initials || 'U'}</AvatarFallback>
+                  </Avatar>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem render={<Link to="/profile" />}>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => { logout(); navigate('/login'); }}>
-                  <LogOut className="size-4" /> Logout
+                  <LogOut className="size-4 mr-2" /> Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
