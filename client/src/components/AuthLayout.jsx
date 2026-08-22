@@ -1,23 +1,11 @@
 import { useState } from 'react';
 import { Globe2 } from 'lucide-react';
 
-/**
- * AuthLayout
- * Full-bleed travel photo, uniformly soft-blurred (like an iOS wallpaper),
- * with brand + headline on the left and a frosted-glass card slot on the
- * right for the form (Login, Signup, Forgot Password, ...).
- * Sits below the existing site header, hence min-h-[calc(100svh-4rem)].
- */
 export default function AuthLayout({
   children,
   eyebrow = 'GlobeTrotter',
   headline = ['Explore', 'Horizons'],
   tagline = 'Where your dream destinations become reality.',
-  // NOTE: istockphoto preview URLs (s=612x612&w=0&k=...) are watermarked
-  // thumbnails meant for on-site display only — istock blocks hotlinking
-  // from other domains, so that URL will 400/fail here. If you own a
-  // license, download the asset and self-host it (e.g. /public/images/hero.jpg)
-  // instead of linking istockphoto directly.
   imageSrc = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop',
 }) {
   const [imgFailed, setImgFailed] = useState(false);
@@ -28,13 +16,12 @@ export default function AuthLayout({
       <div className="absolute inset-0 bg-gradient-to-br from-[#16302B] via-[#1f4a42] to-accent/40" />
 
       {!imgFailed && (
-        // scale-110 hides the soft edges the blur filter would otherwise leave
-        // exposed at the image boundary
+        // no blur filter — photo renders sharp
         <img
           src={imageSrc}
           alt=""
           onError={() => setImgFailed(true)}
-          className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
+          className="absolute inset-0 h-full w-full object-cover"
           aria-hidden="true"
         />
       )}
@@ -45,21 +32,13 @@ export default function AuthLayout({
         </p>
       )}
 
-      {/* legibility wash, evenly across the whole photo since it's already blurred */}
-      <div className="absolute inset-0 bg-[#16302B]/35" />
-      {/* extra darkening on the left where the headline sits */}
+      {/* legibility wash — the image is sharp now, so this carries all the contrast work */}
+      <div className="absolute inset-0 bg-[#16302B]/30" />
       <div className="absolute inset-0 bg-gradient-to-r from-[#16302B]/55 via-transparent to-transparent" />
 
       <div className="relative z-10 flex w-full flex-col lg:flex-row">
-        {/* ---------- left: brand + headline ---------- */}
-        <div className="flex flex-1 flex-col justify-between p-8 text-white sm:p-12 lg:p-16">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-full bg-white text-[#16302B]">
-              <Globe2 className="size-4" />
-            </span>
-            <span className="font-mono text-sm uppercase tracking-[0.32em]">{eyebrow}</span>
-          </div>
-
+        {/* ---------- left: headline only, no brand mark here ---------- */}
+        <div className="flex flex-1 flex-col justify-center gap-8 p-8 text-white sm:p-12 lg:p-16">
           <div className="max-w-lg">
             <h1 className="font-serif text-5xl font-bold uppercase leading-[1.02] tracking-tight drop-shadow-md sm:text-6xl lg:text-7xl">
               {headline.map((line) => (
@@ -81,9 +60,19 @@ export default function AuthLayout({
           </p>
         </div>
 
-        {/* ---------- right: frosted glass form slot ---------- */}
-        <div className="flex w-full items-center justify-center p-6 sm:p-10 lg:w-[480px] lg:p-12">
-          <div className="w-full max-w-md">{children}</div>
+        {/* ---------- right: brand mark + bigger frosted glass card ---------- */}
+        <div className="flex w-full items-center justify-center p-6 sm:p-10 lg:w-[600px] lg:p-12">
+          <div className="w-full max-w-lg">
+            <div className="mb-6 flex items-center justify-center gap-2 text-white">
+              <span className="inline-flex size-8 items-center justify-center rounded-full bg-white text-[#16302B]">
+                <Globe2 className="size-4" />
+              </span>
+              <span className="font-mono text-sm uppercase tracking-[0.32em] drop-shadow-sm">
+                {eyebrow}
+              </span>
+            </div>
+            {children}
+          </div>
         </div>
       </div>
     </div>
