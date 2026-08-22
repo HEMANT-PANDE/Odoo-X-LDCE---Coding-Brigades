@@ -2,23 +2,23 @@ import { Link } from 'react-router-dom';
 import { Globe2, MapPin, Code2, Send, Camera } from 'lucide-react';
 
 const NAV_LINKS = {
-  Product: [
+  Explore: [
     { label: 'Dashboard', to: '/dashboard' },
     { label: 'My Trips', to: '/trips' },
-    { label: 'Search', to: '/search' },
-    { label: 'Calendar', to: '/calendar' },
-    { label: 'Community', to: '/community' },
+    { label: 'Search Destinations', to: '/search' },
+    { label: 'Calendar View', to: '/calendar' },
+    { label: 'Community Feed', to: '/community' },
   ],
   Account: [
-    { label: 'Sign Up', to: '/signup' },
-    { label: 'Log In', to: '/login' },
-    { label: 'Profile', to: '/profile' },
+    { label: 'Create Account', to: '/signup' },
+    { label: 'Sign In', to: '/login' },
+    { label: 'User Profile', to: '/profile' },
   ],
 };
 
 const SOCIALS = [
   { icon: Code2, label: 'GitHub', href: '#' },
-  { icon: Send, label: 'Twitter', href: '#' },
+  { icon: Send, label: 'Twitter / Telegram', href: '#' },
   { icon: Camera, label: 'Instagram', href: '#' },
 ];
 
@@ -36,28 +36,26 @@ export default function Footer() {
         }}
       />
 
-      <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-6 lg:px-8">
-        {/* Top row */}
+      <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-8 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-3.5">
             <div className="flex items-center gap-2.5">
               <span className="inline-flex size-9 items-center justify-center rounded-full bg-[#16302B] text-[#FBF6ED] shadow-sm">
-                <Globe2 className="size-4" />
+                <Globe2 className="size-4.5" />
               </span>
               <div className="leading-tight">
-                <p className="font-serif text-base font-semibold tracking-tight">GlobeTrotter</p>
+                <p className="font-serif text-base font-semibold tracking-tight text-[#16302B]">GlobeTrotter</p>
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#16302B]/50">
-                  Trip Planning
+                  Gate 01 · Trip Planning
                 </p>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-relaxed text-[#16302B]/60">
-              Turn a list of cities into a real itinerary — routed, timed, and budgeted in one evening.
+            <p className="text-xs leading-relaxed text-[#16302B]/65">
+              GlobeTrotter turns a list of cities into a real itinerary — routed, timed, and budgeted in one evening.
             </p>
 
-            {/* Social icons */}
-            <div className="mt-5 flex gap-2">
+            <div className="flex gap-2 pt-1">
               {SOCIALS.map(({ icon: Icon, label, href }) => (
                 <a
                   key={label}
@@ -73,8 +71,8 @@ export default function Footer() {
 
           {/* Nav columns */}
           {Object.entries(NAV_LINKS).map(([section, links]) => (
-            <div key={section}>
-              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#16302B]/45">
+            <div key={section} className="space-y-3">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#16302B]/45">
                 {section}
               </p>
               <ul className="space-y-2">
@@ -82,7 +80,7 @@ export default function Footer() {
                   <li key={label}>
                     <Link
                       to={to}
-                      className="text-sm text-[#16302B]/65 transition-colors hover:text-[#E15B4F]"
+                      className="text-xs text-[#16302B]/65 transition-colors hover:text-[#E15B4F]"
                     >
                       {label}
                     </Link>
@@ -92,23 +90,23 @@ export default function Footer() {
             </div>
           ))}
 
-          {/* Departure board widget */}
+          {/* Now Boarding Card Widget */}
           <div>
             <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#16302B]/45">
               Now Boarding
             </p>
-            <div className="rounded-sm border border-[#16302B]/15 bg-[#16302B] p-4 text-[#FBF6ED]">
+            <div className="rounded-xl border border-[#16302B]/15 bg-[#16302B] p-5 text-[#FBF6ED] shadow-sm">
               <p className="font-mono text-[10px] uppercase tracking-widest text-[#F2A93B]">
                 Gate 01
               </p>
-              <p className="mt-1 font-serif text-base font-semibold">Your Next Trip</p>
+              <p className="mt-1 font-serif text-base font-semibold">Your Next Adventure</p>
               <p className="mt-0.5 font-mono text-[11px] text-[#FBF6ED]/55">
-                Destination: Anywhere
+                Destination: Worldwide
               </p>
-              <div className="mt-3 border-t border-dashed border-[#FBF6ED]/20 pt-3">
+              <div className="mt-4 border-t border-dashed border-[#FBF6ED]/20 pt-3">
                 <Link
-                  to="/signup"
-                  className="inline-flex items-center gap-1.5 rounded bg-[#E15B4F] px-3 py-1.5 text-xs font-semibold text-[#FBF6ED] transition-opacity hover:opacity-90"
+                  to="/trips/new"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#E15B4F] px-3.5 py-1.5 text-xs font-semibold text-[#FBF6ED] transition-opacity hover:opacity-90"
                 >
                   <MapPin className="size-3" /> Start planning
                 </Link>
@@ -117,23 +115,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="my-8 border-t border-dashed border-[#16302B]/20" />
-
         {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="font-mono text-[11px] text-[#16302B]/40">
-            © {year} GlobeTrotter · LDCE Coding Brigades · Odoo Hackathon 2026
-          </p>
+        <div className="mt-10 border-t border-dashed border-[#16302B]/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px] text-[#16302B]/45">
+          <p>© {year} GlobeTrotter · LDCE Coding Brigades · Odoo Hackathon 2026</p>
           <div className="flex gap-4">
-            {['Privacy', 'Terms', 'Contact'].map((label) => (
-              <span
-                key={label}
-                className="font-mono text-[11px] text-[#16302B]/40 cursor-default"
-              >
-                {label}
-              </span>
-            ))}
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Contact</span>
           </div>
         </div>
       </div>

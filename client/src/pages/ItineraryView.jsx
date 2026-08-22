@@ -1,29 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { PieChart, MapPin, Edit3, Wallet } from 'lucide-react';
+import { PieChart, MapPin, Edit3, Wallet, CalendarRange, Clock } from 'lucide-react';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import PageHeader from '../components/PageHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 
 function dayNumber(tripStart, date) {
   const ms = new Date(date) - new Date(tripStart);
   return Math.floor(ms / 86400000) + 1;
 }
 
-const CATEGORY_COLORS = {
-  sightseeing: 'bg-blue-100 text-blue-700',
-  food: 'bg-orange-100 text-orange-700',
-  adventure: 'bg-green-100 text-green-700',
-  culture: 'bg-purple-100 text-purple-700',
-  relaxation: 'bg-pink-100 text-pink-700',
-};
-
 const CATEGORY_ICONS = {
   sightseeing: '🏛️', food: '🍜', adventure: '🧗', culture: '🎭', relaxation: '🧘',
+};
+
+const CATEGORY_BADGES = {
+  sightseeing: 'bg-[#7FA593]/20 text-[#16302B] border-[#7FA593]/40',
+  food: 'bg-[#F2A93B]/20 text-[#8a5b0f] border-[#F2A93B]/40',
+  adventure: 'bg-[#E15B4F]/15 text-[#E15B4F] border-[#E15B4F]/30',
+  culture: 'bg-[#16302B]/10 text-[#16302B] border-[#16302B]/20',
+  relaxation: 'bg-[#7FA593]/15 text-[#2d5244] border-[#7FA593]/30',
 };
 
 export default function ItineraryView() {
@@ -40,15 +35,16 @@ export default function ItineraryView() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8 lg:px-8">
-        <Skeleton className="h-40 w-full" />
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#FBF6ED]">
+        <div className="text-center font-mono text-xs uppercase tracking-widest text-[#16302B]/60">
+          Loading itinerary timeline...
+        </div>
       </div>
     );
   }
 
   if (!trip) return null;
 
-  // Flatten all scheduled activities across stops, grouped by day number
   const byDay = {};
   for (const stop of trip.stops) {
     for (const sa of stop.activities) {
@@ -62,113 +58,139 @@ export default function ItineraryView() {
   const totalActivities = trip.stops.reduce((sum, s) => sum + s.activities.length, 0);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 space-y-6">
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-            <Link to="/trips" className="hover:text-primary transition-colors">My Trips</Link>
-            <span>/</span>
-            <span>Itinerary</span>
+    <main className="relative min-h-svh overflow-x-clip bg-[#FBF6ED] text-[#16302B]">
+      {/* Ledger texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(180deg, #16302B 0px, #16302B 1px, transparent 1px, transparent 34px)',
+        }}
+      />
+
+      <div className="relative mx-auto max-w-4xl px-4 py-10 lg:px-8 space-y-8">
+        {/* Header Manifest Card */}
+        <div className="relative rounded-2xl border border-[#16302B]/12 bg-white/70 p-6 sm:p-8 shadow-sm backdrop-blur">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#16302B]/50 mb-1">
+                <Link to="/trips" className="hover:text-[#E15B4F]">My Trips</Link>
+                <span>/</span>
+                <span>Timeline View</span>
+              </div>
+              <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#16302B]">
+                {trip.name}
+              </h1>
+              <p className="mt-1 font-mono text-xs text-[#16302B]/65 flex items-center gap-2">
+                <CalendarRange className="size-3.5 text-[#E15B4F]" />
+                {trip.startDate.slice(0, 10)} → {trip.endDate.slice(0, 10)}
+              </p>
+            </div>
+
+            <div className="flex gap-2.5 self-start">
+              <Link
+                to={`/trips/${tripId}/builder`}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#16302B]/20 bg-transparent px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[#16302B] transition-colors hover:bg-[#16302B]/5"
+              >
+                <Edit3 className="size-3.5" /> Edit Builder
+              </Link>
+              <Link
+                to={`/trips/${tripId}/budget`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#E15B4F] px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-[#FBF6ED] shadow-sm transition-opacity hover:opacity-90"
+              >
+                <Wallet className="size-3.5" /> Budget
+              </Link>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">{trip.name}</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            📅 {trip.startDate.slice(0, 10)} → {trip.endDate.slice(0, 10)}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link to={`/trips/${tripId}/builder`}>
-              <Edit3 className="size-4 mr-1" /> Edit Builder
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link to={`/trips/${tripId}/budget`}>
-              <Wallet className="size-4 mr-1" /> Budget
-            </Link>
-          </Button>
-        </div>
-      </div>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: 'Cities', value: totalCities.length, icon: '🌍' },
-          { label: 'Activities', value: totalActivities, icon: '🎯' },
-          { label: 'Days Planned', value: days.length, icon: '📅' },
-        ].map((s) => (
-          <Card key={s.label} className="p-4 text-center">
-            <p className="text-2xl mb-1">{s.icon}</p>
-            <p className="text-2xl font-bold">{s.value}</p>
-            <p className="text-xs text-muted-foreground">{s.label}</p>
-          </Card>
-        ))}
-      </div>
+          {/* Quick Metrics */}
+          <div className="mt-6 grid grid-cols-3 gap-4 border-t border-dashed border-[#16302B]/15 pt-4">
+            {[
+              { label: 'Destination Cities', value: totalCities.length },
+              { label: 'Booked Activities', value: totalActivities },
+              { label: 'Days Scheduled', value: days.length },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="font-mono text-[9px] uppercase tracking-widest text-[#16302B]/45">{s.label}</p>
+                <p className="font-serif text-xl font-semibold text-[#16302B]">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      {days.length === 0 ? (
-        <Card className="text-center py-16 border-2 border-dashed">
-          <div className="text-5xl mb-3">📋</div>
-          <h3 className="text-lg font-semibold mb-1">No activities scheduled yet</h3>
-          <p className="text-muted-foreground text-sm mb-6">Add some in the Itinerary Builder to see your day-by-day plan.</p>
-          <Button asChild>
-            <Link to={`/trips/${tripId}/builder`}>Open Itinerary Builder</Link>
-          </Button>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {days.map((day) => (
-            <Card key={day} className="overflow-hidden">
-              <CardHeader className="bg-muted/40 py-3 px-6 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                    {day}
-                  </span>
-                  <CardTitle className="text-base">Day {day}</CardTitle>
-                  <span className="ml-auto text-xs text-muted-foreground">
+        {/* Timeline */}
+        {days.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[#16302B]/20 bg-white/60 py-16 text-center shadow-sm">
+            <span className="mx-auto inline-flex size-11 items-center justify-center rounded-full bg-[#16302B] text-[#F2A93B] mb-3">
+              <CalendarRange className="size-5" />
+            </span>
+            <h3 className="font-serif text-base font-semibold text-[#16302B]">No activities scheduled yet</h3>
+            <p className="mt-1 font-mono text-xs text-[#16302B]/50 max-w-sm mx-auto mb-5">
+              Build out your day-by-day itinerary schedule in the builder.
+            </p>
+            <Link
+              to={`/trips/${tripId}/builder`}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#E15B4F] px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-[#FBF6ED] hover:opacity-90"
+            >
+              Open Builder
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {days.map((day) => (
+              <div key={day} className="rounded-xl border border-[#16302B]/12 bg-white overflow-hidden shadow-none">
+                {/* Day Header */}
+                <div className="flex items-center justify-between border-b border-dashed border-[#16302B]/12 bg-[#FBF6ED]/50 px-6 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-7 items-center justify-center rounded-lg bg-[#16302B] text-[#FBF6ED] font-mono text-xs font-bold">
+                      {day}
+                    </span>
+                    <h3 className="font-serif text-base font-semibold text-[#16302B]">Day {day}</h3>
+                  </div>
+                  <span className="font-mono text-xs text-[#16302B]/50">
                     {byDay[day].length} {byDay[day].length === 1 ? 'activity' : 'activities'}
                   </span>
                 </div>
-              </CardHeader>
 
-              <CardContent className="p-0">
-                <ul className="divide-y divide-border">
+                {/* Day Activities */}
+                <ul className="divide-y divide-[#16302B]/10">
                   {byDay[day]
                     .sort((a, b) => (a.scheduledTime || '').localeCompare(b.scheduledTime || ''))
                     .map((sa) => (
-                      <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-muted/30 transition-colors">
+                      <li key={sa.id} className="flex items-center justify-between px-6 py-3.5 hover:bg-[#FBF6ED]/40 transition-colors">
                         <div className="flex items-center gap-3">
-                          <span className="text-lg">
-                            {CATEGORY_ICONS[sa.activity.category] || '📌'}
-                          </span>
+                          <span className="text-lg">{CATEGORY_ICONS[sa.activity.category] || '📌'}</span>
                           <div>
-                            <p className="font-medium text-sm">{sa.activity.name}</p>
+                            <p className="font-serif text-sm font-semibold text-[#16302B]">{sa.activity.name}</p>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                <MapPin className="size-3" /> {sa.cityName}
+                              <span className="font-mono text-[10px] text-[#16302B]/50 flex items-center gap-1">
+                                <MapPin className="size-3 text-[#E15B4F]" /> {sa.cityName}
                               </span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[sa.activity.category] || 'bg-muted text-foreground'}`}>
+                              <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[sa.activity.category] || 'bg-gray-100'}`}>
                                 {sa.activity.category}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <span className="font-semibold text-primary text-sm ml-4">
+                        <span className="font-mono text-xs font-semibold text-[#16302B]">
                           ${Number(sa.costOverride ?? sa.activity.cost)}
                         </span>
                       </li>
                     ))}
                 </ul>
 
-                <div className="px-6 py-2.5 bg-muted/20 border-t border-border flex justify-between text-xs text-muted-foreground font-medium">
-                  <span>Day {day} total</span>
-                  <span className="font-bold text-foreground">
+                {/* Day total footer */}
+                <div className="flex justify-between border-t border-dashed border-[#16302B]/12 bg-[#FBF6ED]/30 px-6 py-2.5 font-mono text-[11px] text-[#16302B]/60">
+                  <span>Day {day} Subtotal</span>
+                  <span className="font-bold text-[#16302B]">
                     ${byDay[day].reduce((s, sa) => s + Number(sa.costOverride ?? sa.activity.cost), 0).toFixed(2)}
                   </span>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
