@@ -108,19 +108,32 @@ export default function Dashboard() {
               <Link
                 to="/search"
                 key={c.id}
-                className="group relative flex flex-col items-center rounded-xl border border-[#16302B]/12 bg-[#FBF6ED] p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:bg-white shadow-none hover:shadow-sm"
+                className="group relative flex flex-col overflow-hidden rounded-xl border border-[#16302B]/12 bg-[#FBF6ED] text-center transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:bg-white shadow-none hover:shadow-md"
               >
-                <span className="mb-3 inline-flex size-10 items-center justify-center rounded-lg bg-[#16302B] text-[#F2A93B] transition-transform duration-200 group-hover:scale-105">
-                  <MapPin className="size-5" />
-                </span>
-                <p className="font-mono text-[9px] uppercase tracking-widest text-[#16302B]/40">
-                  Stop {String(i + 1).padStart(2, '0')}
-                </p>
-                <p className="font-serif text-sm font-semibold text-[#16302B] mt-0.5">{c.name}</p>
-                <p className="font-mono text-[11px] text-[#16302B]/55 mt-0.5">{c.country}</p>
-                <span className="mt-2.5 inline-flex items-center gap-1 rounded border border-[#16302B]/15 px-2 py-0.5 font-mono text-[10px] text-[#16302B]/60">
-                  <TrendingUp className="size-3 text-[#E15B4F]" /> ${c.costIndex}/day
-                </span>
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#16302B]">
+                  {c.imageUrl ? (
+                    <img
+                      src={c.imageUrl}
+                      alt={c.name}
+                      loading="lazy"
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <span className="flex size-full items-center justify-center text-[#F2A93B]">
+                      <MapPin className="size-6" />
+                    </span>
+                  )}
+                  <span className="absolute left-2 top-2 rounded bg-[#16302B]/80 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#F2A93B] backdrop-blur-sm">
+                    Stop {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col items-center p-3.5">
+                  <p className="font-serif text-sm font-semibold text-[#16302B]">{c.name}</p>
+                  <p className="font-mono text-[11px] text-[#16302B]/55 mt-0.5">{c.country}</p>
+                  <span className="mt-2.5 inline-flex items-center gap-1 rounded border border-[#16302B]/15 px-2 py-0.5 font-mono text-[10px] text-[#16302B]/60">
+                    <TrendingUp className="size-3 text-[#E15B4F]" /> ${c.costIndex}/day
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
