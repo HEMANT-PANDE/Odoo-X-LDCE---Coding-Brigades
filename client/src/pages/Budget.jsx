@@ -4,7 +4,8 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
-import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye, Plane, Hotel, UtensilsCrossed, Target } from 'lucide-react';
+import { AlertTriangle, Wallet, CalendarDays, TrendingUp, MapPin, ArrowLeft, Eye, Plane, Hotel, UtensilsCrossed, Target, Pencil, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,12 +36,27 @@ export default function Budget() {
   const { token } = useAuth();
   const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editingBudget, setEditingBudget] = useState(false);
+  const [budgetInput, setBudgetInput] = useState('');
 
-  useEffect(() => {
+  function load() {
     request(`/trips/${tripId}/budget`, { token })
       .then(setBudget)
       .finally(() => setLoading(false));
-  }, [tripId]);
+  }
+
+  useEffect(load, [tripId]);
+
+  async function saveBudgetLimit(e) {
+    e.preventDefault();
+    try {
+      await request(`/trips/${tripId}`, { method: 'PUT', token, body: { totalBudget: budgetInput === '' ? null : Number(budgetInput) } });
+      setEditingBudget(false);
+      load();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  }
 
   if (loading) {
     return (
@@ -111,9 +127,6 @@ export default function Budget() {
               { label: 'Total Estimated', value: `$${budget.total}`, icon: Wallet },
               { label: 'Avg per Day', value: `$${budget.averagePerDay}`, icon: TrendingUp },
               { label: 'Total Days', value: budget.totalDays, icon: CalendarDays },
-              budget.totalBudget
-                ? { label: 'Budget Limit', value: `$${budget.totalBudget}`, icon: MapPin }
-                : { label: 'Destination Stops', value: budget.perStop.length, icon: MapPin },
             ].map(({ label, value, icon: Icon }) => (
               <div key={label}>
                 <p className="font-mono text-[9px] uppercase tracking-widest text-[#16302B]/45 flex items-center gap-1">
@@ -122,6 +135,35 @@ export default function Budget() {
                 <p className="font-serif text-2xl font-semibold text-[#16302B] mt-0.5">{value}</p>
               </div>
             ))}
+
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-widest text-[#16302B]/45 flex items-center gap-1">
+                <MapPin className="size-3 text-[#E15B4F]" /> Budget Limit
+              </p>
+              {editingBudget ? (
+                <form onSubmit={saveBudgetLimit} className="mt-1 flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    autoFocus
+                    placeholder="No limit"
+                    value={budgetInput}
+                    onChange={(e) => setBudgetInput(e.target.value)}
+                    className="w-20 rounded border border-[#16302B]/20 bg-white px-2 py-1 font-serif text-lg font-semibold text-[#16302B] outline-none focus:border-[#16302B]"
+                  />
+                  <button type="submit" className="text-[#7FA593] hover:text-[#16302B]"><Check className="size-4" /></button>
+                  <button type="button" onClick={() => setEditingBudget(false)} className="text-[#16302B]/40 hover:text-[#E15B4F]"><X className="size-4" /></button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => { setBudgetInput(budget.totalBudget ?? ''); setEditingBudget(true); }}
+                  className="mt-0.5 flex items-center gap-1.5 font-serif text-2xl font-semibold text-[#16302B] hover:text-[#E15B4F] transition-colors"
+                >
+                  {budget.totalBudget ? `$${budget.totalBudget}` : 'Set limit'} <Pencil className="size-3.5 opacity-50" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Progress bar */}
@@ -145,6 +187,16 @@ export default function Budget() {
           <div className="flex items-center gap-2.5 rounded-xl border border-[#E15B4F]/30 bg-[#E15B4F]/10 px-4 py-3 text-xs text-[#E15B4F] font-medium">
             <AlertTriangle className="size-4 flex-shrink-0" />
             <span>Over budget! Estimated <strong>${budget.total}</strong> exceeds your limit by <strong>${(budget.total - budget.totalBudget).toFixed(2)}</strong>.</span>
+          </div>
+        )}
+
+        {budget.overBudgetDays > 0 && (
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#F2A93B]/40 bg-[#F2A93B]/15 px-4 py-3 text-xs text-[#8a5b0f] font-medium">
+            <AlertTriangle className="size-4 flex-shrink-0" />
+            <span>
+              <strong>{budget.overBudgetDays}</strong> of your <strong>{budget.totalDays}</strong> days run above your
+              daily budget of <strong>${budget.dailyBudget}/day</strong> — see the highlighted stops below.
+            </span>
           </div>
         )}
 
@@ -222,14 +274,17 @@ export default function Budget() {
                 </thead>
                 <tbody className="divide-y divide-[#16302B]/10">
                   {budget.perStop.map((s) => (
-                    <tr key={s.stopId} className="hover:bg-black/[0.015] transition-colors">
-                      <td className="px-6 py-3 font-serif font-semibold text-sm text-[#16302B]">{s.city}</td>
+                    <tr key={s.stopId} className={`transition-colors ${s.overBudgetDay ? 'bg-[#E15B4F]/5 hover:bg-[#E15B4F]/10' : 'hover:bg-black/[0.015]'}`}>
+                      <td className="px-6 py-3 font-serif font-semibold text-sm text-[#16302B] flex items-center gap-1.5">
+                        {s.overBudgetDay && <AlertTriangle className="size-3.5 text-[#E15B4F]" />}
+                        {s.city}
+                      </td>
                       <td className="px-6 py-3 text-[#16302B]/60">{s.days}</td>
                       <td className="px-6 py-3 text-[#16302B]/70">${s.transport}</td>
                       <td className="px-6 py-3 text-[#16302B]/70">${s.stay}</td>
                       <td className="px-6 py-3 text-[#16302B]/70">${s.meals}</td>
                       <td className="px-6 py-3 text-[#16302B]/70">${s.activities}</td>
-                      <td className="px-6 py-3 font-bold text-[#16302B]">${s.total}</td>
+                      <td className={`px-6 py-3 font-bold ${s.overBudgetDay ? 'text-[#E15B4F]' : 'text-[#16302B]'}`}>${s.total}</td>
                     </tr>
                   ))}
                   <tr className="bg-[#16302B] text-[#FBF6ED]">

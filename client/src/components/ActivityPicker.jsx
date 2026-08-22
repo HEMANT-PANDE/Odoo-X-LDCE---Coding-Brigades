@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search as SearchIcon, Plus, DollarSign, MapPin, Landmark, UtensilsCrossed, Mountain, Theater, Waves } from 'lucide-react';
+import { Search as SearchIcon, Plus, DollarSign, MapPin, Clock, Landmark, UtensilsCrossed, Mountain, Theater, Waves } from 'lucide-react';
 import request from '../api/client';
 
 const CATEGORIES = ['sightseeing', 'food', 'adventure', 'culture', 'relaxation'];
@@ -111,7 +111,7 @@ export default function ActivityPicker({ cityId, onSelect }) {
         })}
       </div>
 
-      {/* Activity list */}
+      {/* Activity results */}
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <p className="font-mono text-xs text-[#16302B]/50 uppercase tracking-wider">Searching activities...</p>
@@ -120,7 +120,8 @@ export default function ActivityPicker({ cityId, onSelect }) {
         <div className="text-center py-8">
           <p className="font-serif text-sm text-[#16302B]/60">No activities found matching your criteria.</p>
         </div>
-      ) : (
+      ) : onSelect ? (
+        // Compact list — used inside the Itinerary Builder's "add activity" modal.
         <ul className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
           {activities.map((a) => {
             const Icon = CATEGORY_ICONS[a.category] || MapPin;
@@ -159,19 +160,58 @@ export default function ActivityPicker({ cityId, onSelect }) {
                   </div>
                 </div>
               </div>
-              {onSelect && (
-                <button
-                  id={`activity-select-${a.id}`}
-                  onClick={() => onSelect(a)}
-                  className="inline-flex items-center gap-1 rounded bg-[#16302B] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-[#FBF6ED] hover:bg-[#E15B4F] transition-colors flex-shrink-0 mt-0.5"
-                >
-                  <Plus className="size-3" /> Select
-                </button>
-              )}
+              <button
+                id={`activity-select-${a.id}`}
+                onClick={() => onSelect(a)}
+                className="inline-flex items-center gap-1 rounded bg-[#16302B] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-[#FBF6ED] hover:bg-[#E15B4F] transition-colors flex-shrink-0 mt-0.5"
+              >
+                <Plus className="size-3" /> Select
+              </button>
             </li>
             );
           })}
         </ul>
+      ) : (
+        // Card grid — used on the full-page Search screen.
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-h-[560px] overflow-y-auto pr-1">
+          {activities.map((a) => (
+            <div
+              key={a.id}
+              className="flex flex-col overflow-hidden rounded-2xl border border-[#16302B]/12 bg-white shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#16302B]/30 hover:shadow-sm"
+            >
+              <div className="h-36 w-full flex-shrink-0 overflow-hidden bg-[#16302B]/5">
+                {a.imageUrl ? (
+                  <img src={a.imageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center">
+                    {(() => { const Icon = CATEGORY_ICONS[a.category] || MapPin; return <Icon className="size-8 text-[#16302B]/25" />; })()}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-1 flex-col p-4">
+                <div className="mb-2 flex items-center gap-3 font-mono text-[11px] text-[#16302B]/55">
+                  <span className="flex items-center gap-1"><Clock className="size-3.5 text-[#E15B4F]" /> {a.durationHours}h</span>
+                  {a.city?.name && <span className="flex items-center gap-1"><MapPin className="size-3.5 text-[#F2A93B]" /> {a.city.name}</span>}
+                </div>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-serif text-base font-semibold text-[#16302B] line-clamp-1">{a.name}</h3>
+                  <span className={`flex-shrink-0 rounded px-1.5 py-0.5 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[a.category] || 'bg-muted'}`}>
+                    {a.category}
+                  </span>
+                </div>
+                {a.description && <p className="mt-1 text-xs text-[#16302B]/60 line-clamp-2">{a.description}</p>}
+                <div className="mt-3 flex flex-1 items-end justify-between border-t border-dashed border-[#16302B]/15 pt-3">
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-wider text-[#16302B]/45">Starting from</p>
+                    <p className="font-serif text-sm font-bold text-[#E15B4F]">
+                      <DollarSign className="inline size-3.5 -mt-0.5" />{a.cost}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

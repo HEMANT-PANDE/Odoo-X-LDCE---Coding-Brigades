@@ -25,6 +25,7 @@ model User {
   trips        Trip[]
   posts        CommunityPost[]
   resetTokens  PasswordResetToken[]
+  tripMemberships TripMember[]
 
   @@map("users")
 }
@@ -87,6 +88,7 @@ model Trip {
   endDate                 DateTime   @map("end_date") @db.Date
   description             String?
   coverPhotoUrl           String?    @map("cover_photo_url")
+  isPublic                Boolean    @default(false) @map("is_public")
   budgetTransportPerStop  Decimal?   @map("budget_transport_per_stop") @db.Decimal(8, 2)
   budgetStayPerDay        Decimal?   @map("budget_stay_per_day") @db.Decimal(8, 2)
   budgetMealsPerDay       Decimal?   @map("budget_meals_per_day") @db.Decimal(8, 2)
@@ -94,9 +96,24 @@ model Trip {
   createdAt               DateTime   @default(now()) @map("created_at")
   stops                   TripStop[]
   posts                   CommunityPost[]
+  members                 TripMember[]
 
   @@index([userId])
   @@map("trips")
+}
+
+/// A user who joined someone else's public trip to travel as a group.
+model TripMember {
+  id       Int      @id @default(autoincrement())
+  tripId   Int      @map("trip_id")
+  trip     Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId   Int      @map("user_id")
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  @@unique([tripId, userId])
+  @@index([userId])
+  @@map("trip_members")
 }
 
 /// A city visited within a trip, with its own date range.
