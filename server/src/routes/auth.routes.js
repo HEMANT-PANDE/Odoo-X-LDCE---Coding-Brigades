@@ -1,9 +1,14 @@
+const crypto = require('crypto');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../db');
 const config = require('../config');
 const { requireAuth } = require('../middleware/auth');
+const { sendPasswordResetEmail } = require('../services/mailer');
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 const router = express.Router();
 
@@ -43,9 +48,50 @@ router.post('/login', async (req, res) => {
   res.json({ token: sign(user), user: toPublicUser(user) });
 });
 
-// Mocked — no SMTP in a hackathon build, just acknowledges the request.
 router.post('/forgot-password', async (req, res) => {
-  res.json({ message: 'If that email exists, a reset link has been sent.' });
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'email is required' });
+
+  const genericResponse = { message: 'If that email exists, a reset link has been sent.' };
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return res.json(genericResponse);
+
+  const token = crypto.randomBytes(32).toString('hex');
+  await prisma.passwordResetToken.create({
+    data: {
+      userId: user.id,
+      tokenHash: hashToken(token),
+      expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+    },
+  });
+
+  const resetUrl = `${config.clientUrl}/reset-password?token=${token}`;
+  try {
+    await sendPasswordResetEmail(user.email, resetUrl);
+  } catch (err) {
+    console.error('Failed to send password reset email:', err.message);
+    return res.status(502).json({ error: 'Could not send reset email. Try again later.' });
+  }
+
+  res.json(genericResponse);
+});
+
+router.post('/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) return res.status(400).json({ error: 'token and password are required' });
+
+  const record = await prisma.passwordResetToken.findUnique({ where: { tokenHash: hashToken(token) } });
+  if (!record || record.expiresAt < new Date()) {
+    return res.status(400).json({ error: 'Reset link is invalid or has expired' });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: record.userId }, data: { passwordHash } }),
+    prisma.passwordResetToken.deleteMany({ where: { userId: record.userId } }),
+  ]);
+
+  res.json({ message: 'Password updated. You can now log in.' });
 });
 
 router.get('/me', requireAuth, async (req, res) => {
