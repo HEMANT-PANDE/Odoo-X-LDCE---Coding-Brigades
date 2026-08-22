@@ -1,13 +1,17 @@
 const express = require('express');
 const prisma = require('../db');
+const config = require('../config');
+const { fetchLiveActivities } = require('../services/places');
 const { validateIntParam } = require('../middleware/params');
 
 const router = express.Router();
 router.param('id', validateIntParam('id'));
 
+const LIVE_TOPUP_THRESHOLD = 5;
+
 router.get('/', async (req, res) => {
   const { cityId, category, maxCost, maxDuration, search } = req.query;
-  const activities = await prisma.activity.findMany({
+  const catalog = await prisma.activity.findMany({
     where: {
       ...(cityId ? { cityId: Number(cityId) } : {}),
       ...(category ? { category: String(category) } : {}),
@@ -18,7 +22,23 @@ router.get('/', async (req, res) => {
     include: { city: true },
     orderBy: { name: 'asc' },
   });
-  res.json(activities);
+  const results = catalog.map((a) => ({ ...a, source: 'catalog' }));
+
+  const wantsLive = cityId && (config.activitySource === 'dynamic' || (config.activitySource === 'hybrid' && results.length < LIVE_TOPUP_THRESHOLD));
+  if (wantsLive) {
+    const city = await prisma.city.findUnique({ where: { id: Number(cityId) } });
+    if (city) {
+      let live = await fetchLiveActivities(city, { category: category || undefined });
+      const known = new Set(results.map((a) => a.name.toLowerCase()));
+      live = live.filter((a) => !known.has(a.name.toLowerCase()));
+      if (maxCost) live = live.filter((a) => a.cost <= Number(maxCost));
+      if (maxDuration) live = live.filter((a) => a.durationHours <= Number(maxDuration));
+      if (search) live = live.filter((a) => a.name.toLowerCase().includes(String(search).toLowerCase()));
+      results.push(...live.map((a) => ({ ...a, city })));
+    }
+  }
+
+  res.json(results);
 });
 
 router.get('/:id', async (req, res) => {

@@ -8,4 +8,7 @@ module.exports = {
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
+  openTripMapKey: process.env.OPENTRIPMAP_API_KEY || '',
+  // 'static' = DB catalog only, 'dynamic' = live API only, 'hybrid' = DB + live top-up when DB is thin.
+  activitySource: process.env.ACTIVITY_SOURCE || 'hybrid',
 };

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Search as SearchIcon, Plus, Clock, DollarSign } from 'lucide-react';
+import { Search as SearchIcon, Plus, DollarSign, MapPin, Landmark, UtensilsCrossed, Mountain, Theater, Waves } from 'lucide-react';
 import request from '../api/client';
 
 const CATEGORIES = ['sightseeing', 'food', 'adventure', 'culture', 'relaxation'];
 
 const CATEGORY_ICONS = {
-  sightseeing: '🏛️',
-  food: '🍜',
-  adventure: '🧗',
-  culture: '🎭',
-  relaxation: '🧘',
+  sightseeing: Landmark,
+  food: UtensilsCrossed,
+  adventure: Mountain,
+  culture: Theater,
+  relaxation: Waves,
 };
 
 const CATEGORY_BADGES = {
@@ -65,7 +65,7 @@ export default function ActivityPicker({ cityId, onSelect }) {
           <option value="">All Categories</option>
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
-              {CATEGORY_ICONS[c]} {c.charAt(0).toUpperCase() + c.slice(1)}
+              {c.charAt(0).toUpperCase() + c.slice(1)}
             </option>
           ))}
         </select>
@@ -97,15 +97,18 @@ export default function ActivityPicker({ cityId, onSelect }) {
         >
           All
         </button>
-        {CATEGORIES.map((c) => (
-          <button
-            key={c}
-            onClick={() => setCategory(c === category ? '' : c)}
-            className={`rounded-full px-3 py-1 font-mono text-[10px] uppercase font-semibold transition-colors ${category === c ? 'bg-[#16302B] text-[#FBF6ED]' : 'bg-white border border-[#16302B]/15 text-[#16302B]/70 hover:bg-[#FBF6ED]'}`}
-          >
-            {CATEGORY_ICONS[c]} {c}
-          </button>
-        ))}
+        {CATEGORIES.map((c) => {
+          const Icon = CATEGORY_ICONS[c];
+          return (
+            <button
+              key={c}
+              onClick={() => setCategory(c === category ? '' : c)}
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-mono text-[10px] uppercase font-semibold transition-colors ${category === c ? 'bg-[#16302B] text-[#FBF6ED]' : 'bg-white border border-[#16302B]/15 text-[#16302B]/70 hover:bg-[#FBF6ED]'}`}
+            >
+              <Icon className="size-3" /> {c}
+            </button>
+          );
+        })}
       </div>
 
       {/* Activity list */}
@@ -119,14 +122,16 @@ export default function ActivityPicker({ cityId, onSelect }) {
         </div>
       ) : (
         <ul className="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
-          {activities.map((a) => (
+          {activities.map((a) => {
+            const Icon = CATEGORY_ICONS[a.category] || MapPin;
+            return (
             <li
               key={a.id}
               className="flex items-start justify-between gap-3 p-3 rounded-sm border border-[#16302B]/12 bg-white hover:border-[#16302B]/30 transition-all group"
             >
               <div className="flex items-start gap-3">
-                <div className="size-8 rounded bg-[#FBF6ED] border border-[#16302B]/15 flex items-center justify-center text-base flex-shrink-0 mt-0.5">
-                  {CATEGORY_ICONS[a.category] || '📌'}
+                <div className="size-8 rounded bg-[#FBF6ED] border border-[#16302B]/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Icon className="size-4 text-[#16302B]/70" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -134,16 +139,23 @@ export default function ActivityPicker({ cityId, onSelect }) {
                     <span className={`rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border font-semibold ${CATEGORY_BADGES[a.category] || 'bg-muted'}`}>
                       {a.category}
                     </span>
+                    {a.source === 'live' && (
+                      <span className="rounded px-1.5 py-0.2 font-mono text-[9px] uppercase border border-blue-400/40 bg-blue-400/10 text-blue-700 font-semibold" title="Fetched live from OpenTripMap">
+                        Live
+                      </span>
+                    )}
                   </div>
                   {a.city?.name && (
-                    <p className="font-mono text-[10px] text-[#16302B]/50 mt-0.5">📍 {a.city.name}</p>
+                    <p className="font-mono text-[10px] text-[#16302B]/50 mt-0.5 flex items-center gap-1">
+                      <MapPin className="size-3" /> {a.city.name}
+                    </p>
                   )}
                   {a.description && (
                     <p className="text-xs text-[#16302B]/65 mt-1 line-clamp-2">{a.description}</p>
                   )}
                   <div className="flex items-center gap-3 mt-1.5 font-mono text-[10px] text-[#16302B]/60">
-                    <span className="font-semibold text-[#16302B]">💰 ${a.cost}</span>
-                    <span>⏱ {a.durationHours}h</span>
+                    <span className="inline-flex items-center gap-0.5 font-semibold text-[#16302B]"><DollarSign className="size-3" />{a.cost}</span>
+                    <span>{a.durationHours}h</span>
                   </div>
                 </div>
               </div>
@@ -157,7 +169,8 @@ export default function ActivityPicker({ cityId, onSelect }) {
                 </button>
               )}
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

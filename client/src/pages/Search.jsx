@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Globe, Target } from 'lucide-react';
 import CityPicker from '../components/CityPicker';
 import ActivityPicker from '../components/ActivityPicker';
 
@@ -34,23 +35,23 @@ export default function Search() {
         <div className="flex gap-2 border-b border-dashed border-[#16302B]/15 pb-4">
           <button
             onClick={() => setTab('cities')}
-            className={`rounded-full px-5 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
               tab === 'cities'
                 ? 'bg-[#16302B] text-[#FBF6ED] shadow-sm'
                 : 'border border-[#16302B]/20 bg-white/60 text-[#16302B]/70 hover:bg-white'
             }`}
           >
-            🌍 Destination Cities
+            <Globe className="size-3.5" /> Destination Cities
           </button>
           <button
             onClick={() => setTab('activities')}
-            className={`rounded-full px-5 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 font-mono text-xs font-semibold uppercase tracking-wider transition-all ${
               tab === 'activities'
                 ? 'bg-[#16302B] text-[#FBF6ED] shadow-sm'
                 : 'border border-[#16302B]/20 bg-white/60 text-[#16302B]/70 hover:bg-white'
             }`}
           >
-            🎯 Experiences & Activities
+            <Target className="size-3.5" /> Experiences & Activities
           </button>
         </div>
 
