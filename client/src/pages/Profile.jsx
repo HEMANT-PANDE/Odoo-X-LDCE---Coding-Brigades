@@ -5,12 +5,12 @@ import request from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import TripCard from '../components/TripCard';
 import PageHeader from '../components/PageHeader';
+import AvatarUpload from '../components/AvatarUpload';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export default function Profile() {
   const { user, token, login, logout } = useAuth();
@@ -35,6 +35,13 @@ export default function Profile() {
     logout();
   }
 
+  async function handlePhotoUploaded(photoUrl) {
+    const updated = await request('/users/me', { method: 'PUT', token, body: { ...form, photoUrl } });
+    setForm(updated);
+    login(token, updated);
+    toast.success('Photo updated');
+  }
+
   const preplanned = trips.filter((t) => t.status !== 'completed');
   const previous = trips.filter((t) => t.status === 'completed');
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
@@ -46,7 +53,7 @@ export default function Profile() {
       <Card className="mb-8">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <Avatar size="lg"><AvatarFallback className="bg-primary text-lg text-primary-foreground">{initials || 'U'}</AvatarFallback></Avatar>
+            <AvatarUpload token={token} initials={initials || 'U'} value={form.photoUrl} onUploaded={handlePhotoUploaded} />
             <CardTitle>{form.firstName} {form.lastName}</CardTitle>
           </div>
         </CardHeader>

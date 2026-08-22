@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
-import request from '../api/client';
+import request, { uploadPhoto } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../components/AuthLayout';
+import AvatarUpload from '../components/AvatarUpload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,7 @@ const EMPTY = { firstName: '', lastName: '', email: '', phone: '', city: '', cou
 
 export default function Signup() {
   const [form, setForm] = useState(EMPTY);
+  const [photoFile, setPhotoFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -28,7 +30,12 @@ export default function Signup() {
     setError('');
     setLoading(true);
     try {
-      const { token, user } = await request('/auth/signup', { method: 'POST', body: form });
+      let { token, user } = await request('/auth/signup', { method: 'POST', body: form });
+      // No token exists until signup succeeds, so the photo (if any) uploads right after.
+      if (photoFile) {
+        const photoUrl = await uploadPhoto(photoFile, token);
+        user = await request('/users/me', { method: 'PUT', token, body: { ...user, photoUrl } });
+      }
       login(token, user);
       navigate('/dashboard');
     } catch (err) {
@@ -57,6 +64,9 @@ export default function Signup() {
               </p>
             )}
 
+            <div className="flex justify-center">
+              <AvatarUpload initials={`${form.firstName[0] ?? ''}${form.lastName[0] ?? ''}`.toUpperCase() || 'U'} onFileSelected={setPhotoFile} />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="firstName" className="text-[15px] text-foreground/85">First Name</Label>

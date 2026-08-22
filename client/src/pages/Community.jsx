@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export default function Community() {
   const { token, user } = useAuth();
@@ -59,7 +59,9 @@ export default function Community() {
           return (
             <Card key={p.id}>
               <CardContent className="flex gap-3">
-                <Avatar><AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback></Avatar>
+                <Avatar>
+                  {p.user.photoUrl ? <AvatarImage src={p.user.photoUrl} /> : <AvatarFallback className="bg-secondary text-secondary-foreground">{initials}</AvatarFallback>}
+                </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">{p.user.firstName} {p.user.lastName}</p>

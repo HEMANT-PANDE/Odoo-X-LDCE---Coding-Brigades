@@ -18,6 +18,7 @@ app.use('/api/cities', require('./routes/cities.routes'));
 app.use('/api/activities', require('./routes/activities.routes'));
 app.use('/api/community', require('./routes/community.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
+app.use('/api/upload', require('./routes/upload.routes'));
 
 // Centralized error handler — catches thrown/rejected errors from any route above.
 app.use((err, req, res, next) => {
